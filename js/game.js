@@ -202,16 +202,18 @@ async startJourney() {
 
         restore() {
 
-            const data = window.Save?.get?.("gameState");
+    const data = window.Save?.get?.("gameState");
 
-            if (!data) return;
+    if (!data) return;
 
-            this.state.started = !!data.started;
-            this.state.completed = !!data.completed;
-            this.state.currentScene = data.currentScene || 0;
+    this.state.completed = !!data.completed;
+    this.state.currentScene = data.currentScene || 0;
 
-        }
+    // Never lock the Start button on page refresh.
+    // Resume support will be implemented later.
+    this.state.started = false;
 
+}
     };
 
     window.Game = Game;
