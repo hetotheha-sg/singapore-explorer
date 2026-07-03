@@ -1,13 +1,14 @@
 /* ==========================================================
-   An Interactive Love Letter from Singapore
    game.js
+   An Interactive Love Letter from Singapore
    ========================================================== */
 
 (() => {
     "use strict";
 
-    const App = {
-        version: "1.0.0",
+    const Game = {
+
+        version: "1.1.0",
 
         state: {
             started: false,
@@ -17,14 +18,24 @@
 
         elements: {},
 
+        initialized: false,
+
         init() {
+
+            if (this.initialized) return;
+
             this.cacheElements();
             this.bindEvents();
             this.restore();
+
             this.showIntro();
+
+            this.initialized = true;
+
         },
 
         cacheElements() {
+
             this.elements.intro = document.getElementById("intro-scene");
             this.elements.game = document.getElementById("game-scene");
             this.elements.ending = document.getElementById("ending-scene");
@@ -34,35 +45,49 @@
 
             this.elements.viewport = document.getElementById("sceneViewport");
             this.elements.overlay = document.getElementById("overlay");
+
         },
 
         bindEvents() {
-            this.elements.startButton?.addEventListener("click", () => this.startJourney());
 
-            this.elements.restartButton?.addEventListener("click", () => this.restart());
+            this.elements.startButton?.addEventListener(
+                "click",
+                () => this.startJourney()
+            );
+
+            this.elements.restartButton?.addEventListener(
+                "click",
+                () => this.restart()
+            );
 
             window.addEventListener("resize", () => {
-                if (window.UI?.resize) {
-                    window.UI.resize();
-                }
+
+                window.UI?.resize?.();
+
             });
+
         },
 
-        showScene(sceneElement) {
+        showScene(scene) {
+
             [
                 this.elements.intro,
                 this.elements.game,
                 this.elements.ending
-            ].forEach(scene => {
-                if (!scene) return;
-                scene.classList.remove("active");
+            ].forEach(section => {
+
+                section?.classList.remove("active");
+
             });
 
-            sceneElement?.classList.add("active");
+            scene?.classList.add("active");
+
         },
 
         showIntro() {
+
             this.showScene(this.elements.intro);
+
         },
 
         async startJourney() {
@@ -71,33 +96,28 @@
 
             this.state.started = true;
 
-            this.fadeOut();
-
-            await this.wait(500);
+            await this.fadeOut();
 
             this.showScene(this.elements.game);
 
-            this.fadeIn();
+            /* ------------------------------------
+               INITIALISE IN CORRECT ORDER
+            -------------------------------------*/
 
-            if (window.Scenes?.init) {
-                window.Scenes.init(this.elements.viewport);
-            }
+            window.UI?.init?.();
 
-            if (window.UI?.init) {
-                window.UI.init();
-            }
+            window.Passport?.init?.();
 
-            if (window.Passport?.init) {
-                window.Passport.init();
-            }
+            window.AudioEngine?.init?.();
 
-            if (window.AudioEngine?.init) {
-                window.AudioEngine.init();
-            }
+            window.Scenes?.init?.(this.elements.viewport);
 
             this.state.currentScene = 0;
 
             this.save();
+
+            await this.fadeIn();
+
         },
 
         completeJourney() {
@@ -107,64 +127,90 @@
             this.showScene(this.elements.ending);
 
             this.save();
+
         },
 
         restart() {
 
-            if (window.Save?.clear) {
-                window.Save.clear();
-            }
+            window.Save?.clear?.();
 
             location.reload();
+
         },
 
         fadeOut() {
-            this.elements.overlay?.classList.add("visible");
+
+            return new Promise(resolve => {
+
+                if (!this.elements.overlay) {
+
+                    resolve();
+
+                    return;
+
+                }
+
+                this.elements.overlay.classList.add("visible");
+
+                setTimeout(resolve, 450);
+
+            });
+
         },
 
         fadeIn() {
-            setTimeout(() => {
-                this.elements.overlay?.classList.remove("visible");
-            }, 100);
-        },
 
-        wait(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+            return new Promise(resolve => {
+
+                if (!this.elements.overlay) {
+
+                    resolve();
+
+                    return;
+
+                }
+
+                this.elements.overlay.classList.remove("visible");
+
+                setTimeout(resolve, 450);
+
+            });
+
         },
 
         save() {
 
-            if (window.Save?.set) {
+            window.Save?.set?.("gameState", {
 
-                window.Save.set("gameState", {
-                    version: this.version,
-                    started: this.state.started,
-                    completed: this.state.completed,
-                    currentScene: this.state.currentScene
-                });
+                version: this.version,
+                started: this.state.started,
+                completed: this.state.completed,
+                currentScene: this.state.currentScene
 
-            }
+            });
 
         },
 
         restore() {
 
-            if (!window.Save?.get) return;
+            const data = window.Save?.get?.("gameState");
 
-            const save = window.Save.get("gameState");
+            if (!data) return;
 
-            if (!save) return;
+            this.state.started = !!data.started;
+            this.state.completed = !!data.completed;
+            this.state.currentScene = data.currentScene || 0;
 
-            this.state.started = !!save.started;
-            this.state.completed = !!save.completed;
-            this.state.currentScene = save.currentScene || 0;
         }
+
     };
 
-    window.Game = App;
+    window.Game = Game;
 
     document.addEventListener("DOMContentLoaded", () => {
-        App.init();
+
+        Game.init();
+
     });
 
 })();
