@@ -1,590 +1,1042 @@
-<!-- =========================
-PART 2 — APPEND BELOW </script>
-(Do NOT replace your file. Paste this AFTER the current JS once we restructure.
-For now, paste this ABOVE the closing </body> tag.)
-========================= -->
-
-<style>
-
-/* =========================
-PREMIUM OVERLAY
-========================= */
-
-#cinematicOverlay{
-position:fixed;
-inset:0;
-background:rgba(4,18,35,.78);
-backdrop-filter:blur(8px);
-display:none;
-justify-content:center;
-align-items:center;
-z-index:999;
-animation:fadeIn .6s;
-}
-
-#boardingCard{
-
-width:min(760px,92vw);
-
-background:white;
-
-border-radius:24px;
-
-overflow:hidden;
-
-box-shadow:
-0 35px 70px rgba(0,0,0,.35);
-
-animation:slideUp .5s;
-
-}
-
-.bpHeader{
-
-padding:22px 28px;
-
-background:
-linear-gradient(
-90deg,
-#08345d,
-#0d5ba3);
-
-color:white;
-
-}
-
-.bpBody{
-
-padding:26px;
-
-display:grid;
-
-grid-template-columns:
-1fr 180px;
-
-gap:24px;
-
-}
-
-.bpRow{
-
-display:flex;
-
-justify-content:space-between;
-
-margin-bottom:14px;
-
-font-size:17px;
-
-}
-
-.bpBarcode{
-
-height:120px;
-
-background:
-repeating-linear-gradient(
-90deg,
-#000 0,
-#000 3px,
-transparent 3px,
-transparent 6px);
-
-border-radius:10px;
-
-}
-
-.printLine{
-
-height:5px;
-
-background:#ddd;
-
-margin:18px 0;
-
-overflow:hidden;
-
-}
-
-.printFill{
-
-height:100%;
-
-width:0;
-
-background:#0d5ba3;
-
-animation:printTicket 1.8s forwards;
-
-}
-
-#arrivalTerminal{
-
-display:none;
-
-position:fixed;
-
-inset:0;
-
-background:
-
-linear-gradient(
-180deg,
-#b7e7ff,
-#eef9ff);
-
-z-index:998;
-
-padding:60px;
-
-overflow:auto;
-
-}
-
-#terminalHeader{
-
-font-size:42px;
-
-font-weight:700;
-
-color:#08345d;
-
-margin-bottom:10px;
-
-}
-
-#terminalSub{
-
-color:#666;
-
-margin-bottom:40px;
-
-}
-
-.airportSigns{
-
-display:grid;
-
-grid-template-columns:
-
-repeat(auto-fit,minmax(280px,1fr));
-
-gap:22px;
-
-}
-
-.sign{
-
-background:#0d4f8b;
-
-color:white;
-
-padding:24px;
-
-border-radius:18px;
-
-cursor:pointer;
-
-transition:.25s;
-
-box-shadow:
-
-0 12px 25px rgba(0,0,0,.18);
-
-}
-
-.sign:hover{
-
-transform:
-
-translateY(-6px);
-
-}
-
-.sign h2{
-
-margin-bottom:8px;
-
-}
-
-.weatherCard{
-
-position:absolute;
-
-right:40px;
-
-top:40px;
-
-background:white;
-
-padding:16px;
-
-border-radius:16px;
-
-box-shadow:
-
-0 10px 20px rgba(0,0,0,.15);
-
-}
-
-.clock{
-
-font-size:26px;
-
-font-weight:bold;
-
-}
-
-@keyframes slideUp{
-
-from{
-
-transform:
-
-translateY(70px);
-
-opacity:0;
-
-}
-
-to{
-
-transform:
-
-translateY(0);
-
-opacity:1;
-
-}
-
-}
-
-@keyframes fadeIn{
-
-from{
-
-opacity:0;
-
-}
-
-to{
-
-opacity:1;
-
-}
-
-}
-
-@keyframes printTicket{
-
-to{
-
-width:100%;
-
-}
-
-}
-
-</style>
-
-<div id="cinematicOverlay">
-
-<div id="boardingCard">
-
-<div class="bpHeader">
-
-<h2>Singapore Explorer Boarding Pass</h2>
-
-</div>
-
-<div class="bpBody">
-
-<div>
-
-<div class="printLine">
-
-<div class="printFill"></div>
-
-</div>
-
-<div class="bpRow">
-
-<span>Passenger</span>
-
-<b id="bpPassenger"></b>
-
-</div>
-
-<div class="bpRow">
-
-<span>Flight</span>
-
-<b>SQ101</b>
-
-</div>
-
-<div class="bpRow">
-
-<span>Destination</span>
-
-<b>Singapore Explorer</b>
-
-</div>
-
-<div class="bpRow">
-
-<span>Gate</span>
-
-<b>A08</b>
-
-</div>
-
-<div class="bpRow">
-
-<span>Seat</span>
-
-<b>21A</b>
-
-</div>
-
-<div class="bpRow">
-
-<span>Status</span>
-
-<b id="bpStatus">
-
-BOARDING
-
-</b>
-
-</div>
-
-</div>
-
-<div>
-
-<div class="bpBarcode"></div>
-
-</div>
-
-</div>
-
-<div style="padding:0 26px 26px">
-
-<button onclick="openArrivalHall()">
-
-Proceed Through Immigration
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="arrivalTerminal">
-
-<div class="weatherCard">
-
-<div class="clock" id="airportClock">
-
-09:15
-
-</div>
-
-<div>
-
-☀ Sunny • 31°C
-
-</div>
-
-</div>
-
-<div id="terminalHeader">
-
-Welcome to Changi Airport
-
-</div>
-
-<div id="terminalSub">
-
-Choose your adventure.
-
-Your passport will collect stamps as you explore Singapore.
-
-</div>
-
-<div class="airportSigns">
-
-<div class="sign">
-
-<h2>
-
-🍜 Hawker Centre
-
-</h2>
-
-<p>
-
-Learn kopi.
-
-Chope tables.
-
-Meet Hawker Uncle.
-
-</p>
-
-</div>
-
-<div class="sign">
-
-<h2>
-
-💎 Jewel
-
-</h2>
-
-<p>
-
-Discover the Rain Vortex.
-
-</p>
-
-</div>
-
-<div class="sign">
-
-<h2>
-
-📻 Throwback Singapore
-
-</h2>
-
-<p>
-
-80s.
-
-90s.
-
-Old radio.
-
-Dragon playground.
-
-</p>
-
-</div>
-
-<div class="sign">
-
-<h2>
-
-🚆 MRT Adventure
-
-</h2>
-
-<p>
-
-Explore Singapore by train.
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-/* ===== Upgrade Begin ===== */
-
-const oldJourney=beginJourney;
-
-beginJourney=function(){
-
-const traveller=document.getElementById("name").value.trim();
-
-if(!traveller){
-
-alert("Please enter your name.");
-
-return;
-
-}
-
-app.player=traveller;
-
-localStorage.setItem(
-
-"sgExplorer",
-
-JSON.stringify(app)
-
-);
-
-document.getElementById(
-
-"bpPassenger"
-
-).textContent=traveller;
-
-document.getElementById(
-
-"cinematicOverlay"
-
-).style.display="flex";
-
-};
-
-function openArrivalHall(){
-
-document.getElementById(
-
-"cinematicOverlay"
-
-).style.display="none";
-
-document.getElementById(
-
-"scene"
-
-).style.display="none";
-
-document.getElementById(
-
-"arrivalTerminal"
-
-).style.display="block";
-
-}
-
-setInterval(()=>{
-
-const d=new Date();
-
-document.getElementById(
-
-"airportClock"
-
-).textContent=
-
-d.toLocaleTimeString(
-
-[],
-
-{
-
-hour:"2-digit",
-
-minute:"2-digit"
-
-}
-
-);
-
-},1000);
-
-/* ===== Upgrade End ===== */
-
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singapore Explorer: The Changi Challenge</title>
+    <style>
+        /* ============================================
+           RESET & BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a1428 0%, #1a2a4a 50%, #0f1f3c 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           GLASSMORPHISM & UTILITY
+           ============================================ */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+
+        @keyframes smoothFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes stampPress {
+            0% { transform: scale(0.8) rotate(-15deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(0deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes boardingAnim {
+            0% { opacity: 0; transform: rotateY(90deg); }
+            100% { opacity: 1; transform: rotateY(0deg); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* ============================================
+           SCREEN MANAGEMENT
+           ============================================ */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ============================================
+           HOME SCREEN
+           ============================================ */
+        #homeScreen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            gap: 30px;
+        }
+
+        .home-content {
+            text-align: center;
+            animation: smoothFadeIn 1s ease-out;
+        }
+
+        .airport-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 3s infinite;
+        }
+
+        .home-content h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #d4af37, #2196f3, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .home-content .subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            color: #2196f3;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #d4af37, #e8c547);
+            color: #0a1428;
+            border: none;
+            padding: 16px 48px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px rgba(212, 175, 55, 0.5);
+        }
+
+        /* ============================================
+           NAME INPUT SCREEN
+           ============================================ */
+        #nameScreen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .name-form {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px;
+            padding: 60px 40px;
+            width: 100%;
+            max-width: 400px;
+            animation: smoothFadeIn 0.6s ease-out;
+            text-align: center;
+        }
+
+        .name-form h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #d4af37;
+        }
+
+        .name-form p {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .passport-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1rem;
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .form-buttons button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #d4af37, #e8c547);
+            color: #0a1428;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-back {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+            border: 1px solid rgba(33, 150, 243, 0.5);
+        }
+
+        .btn-back:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        /* ============================================
+           BOARDING PASS SCREEN
+           ============================================ */
+        #boardingScreen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .boarding-pass {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            animation: boardingAnim 1s ease-out;
+        }
+
+        .boarding-airline {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+        }
+
+        .boarding-row {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px 0;
+            border-bottom: 1px dashed rgba(212, 175, 55, 0.3);
+        }
+
+        .boarding-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .boarding-value {
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .boarding-barcode {
+            height: 50px;
+            background: repeating-linear-gradient(90deg,rgba(212, 175, 55, 0.8),rgba(212, 175, 55, 0.8) 2px,transparent 2px,transparent 4px);
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .boarding-barcode-text {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .boarding-btn {
+            background: linear-gradient(135deg, #2196f3, #21c4f3);
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .boarding-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(33, 150, 243, 0.4);
+        }
+
+        /* ============================================
+           GAME SCREEN
+           ============================================ */
+        #gameScreen {
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            padding: 0;
+            gap: 0;
+        }
+
+        .top-bar {
+            background: rgba(10, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 1.3rem;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #2196f3);
+            transition: width 0.3s ease;
+        }
+
+        .passport-stamps {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .stamp {
+            width: 16px;
+            height: 16px;
+            background: rgba(212, 175, 55, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .stamp.earned {
+            background: #d4af37;
+            color: #0a1428;
+            animation: stampPress 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .game-content {
+            flex: 1;
+            padding: 40px 20px;
+            overflow-y: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-container {
+            width: 100%;
+            max-width: 600px;
+            animation: smoothFadeIn 0.5s ease-out;
+        }
+
+        .question-category {
+            display: inline-block;
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(33, 150, 243, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-counter {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            color: #fff;
+        }
+
+        .question-type-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            margin-left: 10px;
+            text-transform: uppercase;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-letter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            font-weight: 600;
+            color: #d4af37;
+            flex-shrink: 0;
+        }
+
+        .option:hover {
+            background: rgba(33, 150, 243, 0.1);
+            border-color: rgba(33, 150, 243, 0.4);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: rgba(33, 150, 243, 0.2);
+            border-color: #2196f3;
+        }
+
+        .option.correct {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+            animation: pulse 0.5s ease-out;
+        }
+
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: #f44336;
+        }
+
+        .option:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .true-false-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .tf-button {
+            flex: 1;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .tf-button:hover {
+            transform: translateY(-2px);
+            background: rgba(33, 150, 243, 0.1);
+            border-color: rgba(33, 150, 243, 0.4);
+        }
+
+        .tf-button.selected {
+            background: rgba(33, 150, 243, 0.2);
+            border-color: #2196f3;
+        }
+
+        .tf-button.correct {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+        }
+
+        .tf-button.incorrect {
+            background: rgba(244, 67, 54, 0.2);
+            border-color: #f44336;
+        }
+
+        .submit-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .submit-btn {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #d4af37, #e8c547);
+            color: #0a1428;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(212, 175, 55, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .skip-btn {
+            padding: 14px 40px;
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+            border: 1px solid rgba(33, 150, 243, 0.5);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .skip-btn:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        /* ============================================
+           RESULT SCREEN
+           ============================================ */
+        #resultScreen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 30px;
+        }
+
+        .result-card {
+            text-align: center;
+            animation: smoothFadeIn 0.8s ease-out;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .result-trophy {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: bounce 0.8s ease-out;
+        }
+
+        .result-rank {
+            font-size: 2rem;
+            color: #d4af37;
+            font-weight: 700;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .result-score-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .result-score-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .result-score-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #d4af37;
+            line-height: 1;
+        }
+
+        .result-score-percent {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 10px;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .result-detail-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .result-detail-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .result-detail-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2196f3;
+        }
+
+        .result-message {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 20px 0;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4af37, #e8c547);
+            color: #0a1428;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .replay-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #d4af37, #e8c547);
+            color: #0a1428;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .replay-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+        }
+
+        .home-btn {
+            padding: 16px 40px;
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+            border: 1px solid rgba(33, 150, 243, 0.5);
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            background: rgba(33, 150, 243, 0.3);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .home-content h1 { font-size: 2.5rem; }
+            .question-text { font-size: 1.2rem; }
+            .result-score-number { font-size: 2.8rem; }
+            .result-rank { font-size: 1.5rem; }
+            .top-bar { padding: 12px 15px; gap: 10px; }
+            .stat-item { padding: 6px 12px; font-size: 0.9rem; }
+            .game-content { padding: 30px 15px; }
+            .true-false-container { gap: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .home-content h1 { font-size: 2rem; }
+            .name-form { padding: 40px 25px; }
+            .question-text { font-size: 1.1rem; }
+            .option { padding: 12px 15px; font-size: 0.9rem; }
+            .result-score-number { font-size: 2.2rem; }
+            .result-details { grid-template-columns: 1fr; }
+            .result-buttons { flex-direction: column; }
+            .replay-btn, .home-btn { width: 100%; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.6); }
+    </style>
+</head>
+<body>
+    <div id="homeScreen" class="screen active">
+        <div class="home-content">
+            <div class="airport-icon">✈️</div>
+            <h1>Singapore Explorer</h1>
+            <p class="subtitle">The Changi Challenge</p>
+            <p class="tagline">Test your knowledge of Singapore, Changi Airport, and iconic heritage</p>
+            <button class="cta-button" onclick="gameState.goToNameScreen()">Begin Journey</button>
+        </div>
+    </div>
+
+    <div id="nameScreen" class="screen">
+        <div class="name-form">
+            <div class="passport-icon">🛂</div>
+            <h2>Welcome Traveller</h2>
+            <p>Enter your name to receive your boarding pass</p>
+            <input type="text" id="nameInput" class="name-input" placeholder="Your name here..." autocomplete="off" onkeypress="if(event.key==='Enter') gameState.submitName()">
+            <div class="form-buttons">
+                <button class="form-buttons button btn-back" onclick="gameState.goToHome()">← Back</button>
+                <button class="form-buttons button btn-submit" onclick="gameState.submitName()">Continue →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="boardingScreen" class="screen">
+        <div class="boarding-pass">
+            <div class="boarding-airline">SINGAPORE EXPLORER</div>
+            <div class="boarding-row">
+                <div>
+                    <div class="boarding-label">Passenger</div>
+                    <div class="boarding-value" id="boardingName"></div>
+                </div>
+                <div>
+                    <div class="boarding-label">Gate</div>
+                    <div class="boarding-value">T5-E82</div>
+                </div>
+            </div>
+            <div class="boarding-row">
+                <div>
+                    <div class="boarding-label">From</div>
+                    <div class="boarding-value">CHANGI</div>
+                </div>
+                <div>
+                    <div class="boarding-label">To</div>
+                    <div class="boarding-value">TRIVIA</div>
+                </div>
+            </div>
+            <div class="boarding-row">
+                <div>
+                    <div class="boarding-label">Flight</div>
+                    <div class="boarding-value">SE-2024</div>
+                </div>
+                <div>
+                    <div class="boarding-label">Seat</div>
+                    <div class="boarding-value" id="boardingSeat"></div>
+                </div>
+            </div>
+            <div class="boarding-bottom">
+                <div class="boarding-barcode"></div>
+                <div class="boarding-barcode-text">SG-EXPLORER-2024</div>
+            </div>
+            <button class="boarding-btn" onclick="gameState.startGame()">Proceed to Trivia →</button>
+        </div>
+    </div>
+
+    <div id="gameScreen" class="screen">
+        <div class="top-bar">
+            <div class="stat-item">
+                <span class="stat-icon">🎯</span>
+                <div>
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value"><span id="topScore">0</span>/100</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">❤️</span>
+                <div>
+                    <div class="stat-label">Lives</div>
+                    <div class="stat-value" id="topLives">3</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🛂</span>
+                <div>
+                    <div class="stat-label">Passport</div>
+                    <div class="passport-stamps" id="topStamps"></div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📍</span>
+                <div>
+                    <div class="stat-label">Progress</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="game-content">
+            <div class="question-container" id="questionContainer"></div>
+        </div>
+    </div>
+
+    <div id="resultScreen" class="screen">
+        <div class="result-card">
+            <div class="result-trophy" id="resultTrophy">🏆</div>
+            <h2 id="resultRankTitle" class="result-rank">Singapore Explorer</h2>
+            <div class="result-score-box">
+                <div class="result-score-label">Final Score</div>
+                <div class="result-score-number" id="resultScore">0</div>
+                <div class="result-score-percent" id="resultPercent">0%</div>
+            </div>
+            <div class="result-details">
+                <div class="result-detail-item">
+                    <div class="result-detail-label">Correct Answers</div>
+                    <div class="result-detail-value" id="resultCorrect">0</div>
+                </div>
+                <div class="result-detail-item">
+                    <div class="result-detail-label">Accuracy</div>
+                    <div class="result-detail-value" id="resultAccuracy">0%</div>
+                </div>
+            </div>
+            <p class="result-message" id="resultMessage"></p>
+            <div class="rank-badge" id="resultBadge"></div>
+            <div class="result-buttons">
+                <button class="replay-btn" onclick="gameState.replay()">🔄 Play Again</button>
+                <button class="home-btn" onclick="gameState.goToHome()">🏠 Return Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS = [
+            {category:"Changi Airport",type:"multiple-choice",question:"In which year was Changi Airport officially opened?",options:["1981","1985","1979","1988"],correct:0},
+            {category:"Changi Airport",type:"true-false",question:"Changi Airport has 4 terminals.",correct:false},
+            {category:"Changi Airport",type:"multiple-choice",question:"What is the main hub airline of Changi Airport?",options:["Tiger Airways","Singapore Airlines","Jetstar","AirAsia"],correct:1},
+            {category:"Changi Airport",type:"true-false",question:"Changi Airport is one of the world's busiest airports.",correct:true},
+            {category:"Changi Airport",type:"multiple-choice",question:"Which terminal at Changi Airport is the newest major expansion?",options:["Terminal 2","Terminal 5","Terminal 3","Terminal 4"],correct:1},
+            {category:"Changi Airport",type:"true-false",question:"Changi Airport has a butterfly garden and free movie cinema.",correct:true},
+            {category:"Changi Airport",type:"multiple-choice",question:"What is the iconic rooftop feature in Terminal 1?",options:["Waterfall","Rain vortex","Garden","Swimming pool"],correct:0},
+            {category:"Changi Airport",type:"true-false",question:"Changi Airport is located on an island east of central Singapore.",correct:true},
+            {category:"Changi Airport",type:"multiple-choice",question:"Approximately how many destinations does Changi serve?",options:["100+","200+","300+","400+"],correct:2},
+            {category:"Changi Airport",type:"true-false",question:"The Changi Airport Jewel features a 40-metre indoor waterfall.",correct:true},
+            {category:"Singapore",type:"multiple-choice",question:"What is the capital of Singapore?",options:["Georgetown","Singapore City","The entire country","Sentosa"],correct:2},
+            {category:"Singapore",type:"true-false",question:"Singapore was a former British colony.",correct:true},
+            {category:"Singapore",type:"multiple-choice",question:"How many people approximately live in Singapore?",options:["2 million","4 million","6 million","8 million"],correct:1},
+            {category:"Singapore",type:"true-false",question:"Singapore is located on the equator.",correct:false},
+            {category:"Singapore",type:"multiple-choice",question:"What is the official currency of Singapore?",options:["Malaysian Ringgit","Singapore Dollar","British Pound","Euro"],correct:1},
+            {category:"Singapore",type:"true-false",question:"Singapore is the world's most densely populated country.",correct:true},
+            {category:"Singapore",type:"multiple-choice",question:"Which of these is NOT one of Singapore's main ethnic groups?",options:["Chinese","Malay","Indian","Japanese"],correct:3},
+            {category:"Singapore",type:"true-false",question:"Singapore has 4 official languages.",correct:true},
+            {category:"Singapore",type:"multiple-choice",question:"What year did Singapore gain independence?",options:["1959","1963","1965","1971"],correct:2},
+            {category:"Singapore",type:"true-false",question:"Singapore is a constitutional monarchy.",correct:false},
+            {category:"Hawker Food",type:"multiple-choice",question:"What is laksa?",options:["A noodle soup with spicy coconut curry","A type of bread","A dessert","A drink"],correct:0},
+            {category:"Hawker Food",type:"true-false",question:"Satay is grilled meat served with peanut sauce.",correct:true},
+            {category:"Hawker Food",type:"multiple-choice",question:"What is chilli crab?",options:["A vegetable dish","Crab cooked in spicy tomato-based sauce","A type of fish","A drink"],correct:1},
+            {category:"Hawker Food",type:"true-false",question:"Char kway teow is a sweet dessert.",correct:false},
+            {category:"Hawker Food",type:"multiple-choice",question:"What is the main ingredient in chicken rice?",options:["Fried chicken","Poached chicken","Grilled chicken","Roasted chicken"],correct:1},
+            {category:"Hawker Food",type:"true-false",question:"Rojak is a salad with peanut sauce.",correct:true},
+            {category:"Hawker Food",type:"multiple-choice",question:"What are murtabak?",options:["Noodles","Stuffed flatbread","Rice cakes","Dumplings"],correct:1},
+            {category:"Hawker Food",type:"true-false",question:"Popiah is a spring roll with vegetable filling.",correct:true},
+            {category:"Hawker Food",type:"multiple-choice",question:"What is the main component of chicken rice gravy?",options:["Soy sauce","Oyster sauce","Chicken stock","All of the above"],correct:2},
+            {category:"Hawker Food",type:"true-false",question:"Nasi kuning is yellow rice made with turmeric.",correct:true},
+            {category:"Kopi",type:"multiple-choice",question:"What is 'Kopi'?",options:["Tea","Coffee","Juice","Water"],correct:1},
+            {category:"Kopi",type:"true-false",question:"Kopi O is coffee with sugar.",correct:true},
+            {category:"Kopi",type:"multiple-choice",question:"What does 'Kopi C' contain?",options:["Evaporated milk","Condensed milk","Cream","Coconut milk"],correct:0},
+            {category:"Kopi",type:"true-false",question:"Kopi Peng is hot coffee.",correct:false},
+            {category:"Kopi",type:"multiple-choice",question:"What is 'Kopi Siu Dai'?",options:["Coffee with less sugar","Coffee with more sugar","Strong black coffee","Weak coffee"],correct:0},
+            {category:"Kopi",type:"true-false",question:"Teh is coffee in the local language.",correct:false},
+            {category:"Kopi",type:"multiple-choice",question:"What is 'Teh Tarik'?",options:["Iced tea","Tea pulled between cups","Sweet tea","Black tea"],correct:1},
+            {category:"Kopi",type:"true-false",question:"Kopi O Kosong has sugar added.",correct:false},
+            {category:"Kopi",type:"multiple-choice",question:"How is traditional kopi prepared?",options:["Espresso machine","Pour over cloth filter","French press","Instant coffee"],correct:1},
+            {category:"Kopi",type:"true-false",question:"Kopitiam is a traditional coffee shop in Singapore.",correct:true},
+            {category:"Singlish",type:"multiple-choice",question:"What does 'lor' mean in Singlish?",options:["Yes","No","Particle expressing inevitability","Okay"],correct:2},
+            {category:"Singlish",type:"true-false",question:"'Lah' at the end of a sentence is used for emphasis in Singlish.",correct:true},
+            {category:"Singlish",type:"multiple-choice",question:"What does 'Can or not' mean?",options:["Is it possible or not","Do you have a can","Cannot do","Yes definitely"],correct:0},
+            {category:"Singlish",type:"true-false",question:"'Leh' is used when asking for confirmation in Singlish.",correct:true},
+            {category:"Singlish",type:"multiple-choice",question:"What does 'confirm plus chop' mean?",options:["Buy vegetables","Cut something","Definitely confirmed","A restaurant dish"],correct:2},
+            {category:"Singlish",type:"true-false",question:"'Meh' is used to express doubt or surprise in Singlish.",correct:true},
+            {category:"Singlish",type:"multiple-choice",question:"What does 'blur like sotong' mean?",options:["Fast","Confused","Angry","Happy"],correct:1},
+            {category:"Singlish",type:"true-false",question:"'Kena' means to suffer or get hit by something bad in Singlish.",correct:true},
+            {category:"Singlish",type:"multiple-choice",question:"What does 'bo liao' mean?",options:["Hello","Good","Nothing to do/bored","Thank you"],correct:2},
+            {category:"Singlish",type:"true-false",question:"'Kiasu' means being afraid of losing in Singlish.",correct:true},
+            {category:"Chinese Dialect",type:"multiple-choice",question:"Which Chinese dialect is most commonly spoken in Singapore?",options:["Mandarin","Hokkien","Cantonese","Teochew"],correct:1},
+            {category:"Chinese Dialect",type:"true-false",question:"Mandarin Chinese is the official dialect taught in Singapore schools.",correct:true},
+            {category:"Chinese Dialect",type:"multiple-choice",question:"What is the origin of Hokkien dialect?",options:["Guangdong","Fujian","Zhejiang","Anhui"],correct:1},
+            {category:"Chinese Dialect",type:"true-false",question:"Cantonese uses 6 tones in speech.",correct:false},
+            {category:"Chinese Dialect",type:"multiple-choice",question:"What is Teochew dialect also known as?",options:["Chaoshan","Hakka","Min Nan","Wu"],correct:0},
+            {category:"Chinese Dialect",type:"true-false",question:"Hakka dialect is spoken by the Hakka people.",correct:true},
+            {category:"Chinese Dialect",type:"multiple-choice",question:"How many main Chinese dialects exist?",options:["3","5","7","10"],correct:2},
+            {category:"Chinese Dialect",type:"true-false",question:"All Chinese dialects share the same written form.",correct:true},
+            {category:"Chinese Dialect",type:"multiple-choice",question:"Which dialect is spoken primarily in Hong Kong?",options:["Hokkien","Cantonese","Teochew","Mandarin"],correct:1},
+            {category:"Chinese Dialect",type:"true-false",question:"Wu dialect is primarily spoken in the Shanghai region.",correct:true},
+            {category:"MRT",type:"multiple-choice",question:"When was Singapore's MRT system first opened?",options:["1987","1990","1993","1995"],correct:0},
+            {category:"MRT",type:"true-false",question:"MRT stands for Mass Rapid Transit.",correct:true},
+            {category:"MRT",type:"multiple-choice",question:"How many MRT lines does Singapore currently have?",options:["5","6","7","8"],correct:2},
+            {category:"MRT",type:"true-false",question:"The North-South Line was the first MRT line in Singapore.",correct:true},
+            {category:"MRT",type:"multiple-choice",question:"Which MRT line connects to Changi Airport?",options:["East-West Line","North-South Line","Circle Line","Airport Link"],correct:3},
+            {category:"MRT",type:"true-false",question:"Singapore's MRT system operates 24 hours a day.",correct:false},
+            {category:"MRT",type:"multiple-choice",question:"What color is the East-West Line on the map?",options:["Blue","Red","Green","Purple"],correct:1},
+            {category:"MRT",type:"true-false",question:"The Circle Line forms a complete loop around Singapore.",correct:false},
+            {category:"MRT",type:"multiple-choice",question:"Which station is one of the busiest interchange stations?",options:["Jurong East","Dhoby Ghaut","Bishan","Raffles Place"],correct:1},
+            {category:"MRT",type:"true-false",question:"The Thomson-East Coast Line (TEL) is Singapore's newest MRT line.",correct:true},
+            {category:"Festivals",type:"multiple-choice",question:"What is Chinese New Year also known as?",options:["Lunar Festival","Spring Festival","Lunar New Year","All of the above"],correct:3},
+            {category:"Festivals",type:"true-false",question:"Deepavali is a festival of lights celebrated by Hindu communities.",correct:true},
+            {category:"Festivals",type:"multiple-choice",question:"During Hari Raya, Muslims celebrate the end of which month?",options:["Rajah","Safar","Ramadan","Muharram"],correct:2},
+            {category:"Festivals",type:"true-false",question:"Vesak Day celebrates the Buddha's birthday.",correct:true},
+            {category:"Festivals",type:"multiple-choice",question:"What is the Dragon Boat Festival associated with?",options:["Spring","Summer","Autumn","Winter"],correct:1},
+            {category:"Festivals",type:"true-false",question:"Thaipusam is celebrated by the Tamil community.",correct:true},
+            {category:"Festivals",type:"multiple-choice",question:"How many days does Chinese New Year celebration last?",options:["1 day","3 days","7 days","15 days"],correct:3},
+            {category:"Festivals",type:"true-false",question:"Good Friday is a public holiday in Singapore.",correct:true},
+            {category:"Festivals",type:"multiple-choice",question:"The Mid-Autumn Festival is celebrated with which item?",options:["Lanterns","Mooncakes","Both","Neither"],correct:2},
+            {category:"Festivals",type:"true-false",question:"Chingay Parade features elaborate colorful floats.",correct:true},
+            {category:"80s & 90s Singapore",type:"multiple-choice",question:"What was Singapore's main economic focus in the 80s and 90s?",options:["Tourism","Manufacturing and finance","Agriculture","Entertainment"],correct:1},
+            {category:"80s & 90s Singapore",type:"true-false",question:"The first MRT line opened in the 1980s.",correct:true},
+            {category:"80s & 90s Singapore",type:"multiple-choice",question:"Which iconic hotel opened in 1992 in Singapore?",options:["Marina Bay Sands","Raffles Hotel","Sentosa Resort","Orchard Hotel"],correct:0},
+            {category:"80s & 90s Singapore",type:"true-false",question:"Singapore's Changi Airport expansion completed in the 1990s.",correct:true},
+            {category:"80s & 90s Singapore",type:"multiple-choice",question:"What major financial event affected Singapore in 1997-98?",options:["Dot-com boom","Asian Financial Crisis","Oil crisis","Property boom"],correct:1},
+            {category:"80s & 90s Singapore",type:"true-false",question:"Sentosa Island was developed as a leisure destination in the 80s-90s.",correct:true},
+            {category:"80s & 90s Singapore",type:"multiple-choice",question:"What was Singapore's main export in the 90s besides electronics?",options:["Oil","Petroleum products","Textiles","Food"],correct:1},
+            {category:"80s & 90s Singapore",type:"true-false",question:"Singapore hosted the South East Asian Games in the 1990s.",correct:true},
+            {category:"80s & 90s Singapore",type:"multiple-choice",question:"Which industry boomed in Singapore during the late 1980s?",options:["Tourism","Property and construction","Fishing","Agriculture"],correct:1},
+            {category:"80s & 90s Singapore",type:"true-false",question:"Singapore became a developed nation status by the early 1990s.",correct:true},
+            {category:"Landmarks",type:"multiple-choice",question:"What is the Merlion?",options:["A fish","A statue","A building","A garden"],correct:1},
+            {category:"Landmarks",type:"true-false",question:"Marina Bay Sands is shaped like a lily pad from above.",correct:false},
+            {category:"Landmarks",type:"multiple-choice",question:"Which landmark features a helipad on top?",options:["Raffles Hotel","Marina Bay Sands","Gardens by the Bay","ArtScience Museum"],correct:1},
+            {category:"Landmarks",type:"true-false",question:"The Raffles Hotel is located in the Colonial District.",correct:true},
+            {category:"Landmarks",type:"multiple-choice",question:"What are the iconic features of Gardens by the Bay?",options:["Supertrees","Glass domes","Both","Neither"],correct:2},
+            {category:"Landmarks",type:"true-false",question:"Fort Canning Park was a military fortress.",correct:true},
+            {category:"Landmarks",type:"multiple-choice",question:"Which religious site is the oldest temple in Singapore?",options:["Thian Hock Keng","Sri Mariamman Temple","Sultan Mosque","Hong San See"],correct:0},
+            {category:"Landmarks",type:"true-false",question:"Sentosa Island is accessible by cable car.",correct:true},
+            {category:"Landmarks",type:"multiple-choice",question:"What is the ArtScience Museum shaped like?",options:["Cube","Lotus flower","Shell","Pyramid"],correct:1},
+            {category:"Landmarks",type:"true-false",question:"Orchard Road is famous for shopping and entertainment.",correct:true}
+        ];
+
+        const gameState={currentQuestion:0,score:0,lives:3,passportStamps:0,totalQuestions:100,playerName:"",questions:[],currentAnswer:null,answered:false,init(){this.questions=this.shuffleArray([...QUESTIONS]).slice(0,this.totalQuestions);this.lives=3;this.score=0;this.passportStamps=0;this.currentQuestion=0;this.currentAnswer=null;this.answered=false},goToHome(){this.showScreen('homeScreen')},goToNameScreen(){document.getElementById('nameInput').value='';this.showScreen('nameScreen');setTimeout(()=>{document.getElementById('nameInput').focus()},100)},submitName(){const name=document.getElementById('nameInput').value.trim();if(name.length<2){alert('Please enter a valid name (at least 2 characters)');return}this.playerName=name;this.showBoardingPass()},showBoardingPass(){document.getElementById('boardingName').textContent=this.playerName.toUpperCase();document.getElementById('boardingSeat').textContent='12'+String.fromCharCode(65+Math.floor(Math.random()*6));this.showScreen('boardingScreen');this.playSound('boarding')},startGame(){this.init();this.showScreen('gameScreen');this.renderQuestion();this.playSound('ambient')},renderQuestion(){if(this.currentQuestion>=this.totalQuestions){this.showResults();return}const q=this.questions[this.currentQuestion];this.answered=false;this.currentAnswer=null;let html=`<div class="question-category">${q.category}</div><div class="question-counter">Question ${this.currentQuestion+1} of ${this.totalQuestions}</div><div class="question-text">${q.question}</div><span class="question-type-badge">${q.type}</span>`;if(q.type==='multiple-choice'){html+=this.renderMultipleChoice(q)}else if(q.type==='true-false'){html+=this.renderTrueFalse(q)}html+=`<div class="submit-container"><button class="submit-btn" id="submitBtn" onclick="gameState.submitAnswer()" disabled>Submit Answer</button><button class="skip-btn" onclick="gameState.skipQuestion()">Skip</button></div>`;document.getElementById('questionContainer').innerHTML=html;this.updateTopBar()},renderMultipleChoice(q){let html='<div class="options-container">';q.options.forEach((opt,i)=>{html+=`<div class="option" onclick="gameState.selectOption(${i})"><div class="option-letter">${String.fromCharCode(65+i)}</div><div>${opt}</div></div>`});html+='</div>';return html},renderTrueFalse(q){return `<div class="true-false-container"><button class="tf-button" onclick="gameState.selectTF(true)">True</button><button class="tf-button" onclick="gameState.selectTF(false)">False</button></div>`},selectOption(index){document.querySelectorAll('.option').forEach((el,i)=>{el.classList.toggle('selected',i===index)});this.currentAnswer=index;document.getElementById('submitBtn').disabled=false},selectTF(value){document.querySelectorAll('.tf-button').forEach(el=>el.classList.remove('selected'));event.target.classList.add('selected');this.currentAnswer=value;document.getElementById('submitBtn').disabled=false},submitAnswer(){if(this.answered||this.currentAnswer===null)return;const q=this.questions[this.currentQuestion];const isCorrect=this.checkAnswer(q,this.currentAnswer);this.answered=true;if(q.type==='multiple-choice'||q.type==='true-false'){this.markAnswerVisual(isCorrect)}if(isCorrect){this.score++;if((this.score)%10===0){this.passportStamps++;this.playSound('stamp')}}else{this.lives--;if(this.lives<=0){setTimeout(()=>this.showResults(),1500);return}}this.updateTopBar();setTimeout(()=>{this.currentQuestion++;this.renderQuestion()},1500)},skipQuestion(){this.lives--;if(this.lives<=0){this.showResults();return}this.currentQuestion++;this.renderQuestion()},checkAnswer(q,answer){if(q.type==='true-false'){return answer===q.correct}return answer===q.correct},markAnswerVisual(correct){const q=this.questions[this.currentQuestion];if(q.type==='multiple-choice'){document.querySelectorAll('.option').forEach((el,i)=>{if(i===q.correct){el.classList.add('correct')}else if(i===this.currentAnswer&&!correct){el.classList.add('incorrect')}el.style.pointerEvents='none'})}else if(q.type==='true-false'){document.querySelectorAll('.tf-button').forEach((el,i)=>{if((i===0&&q.correct)||(i===1&&!q.correct)){el.classList.add('correct')}else if(el.classList.contains('selected')&&!correct){el.classList.add('incorrect')}el.style.pointerEvents='none'})}},updateTopBar(){document.getElementById('topScore').textContent=this.score;document.getElementById('topLives').textContent=this.lives;let stampHtml='';for(let i=0;i<10;i++){stampHtml+=`<div class="stamp ${i<this.passportStamps?'earned':''}">✓</div>`}document.getElementById('topStamps').innerHTML=stampHtml;const progress=((this.currentQuestion+1)/this.totalQuestions)*100;document.getElementById('progressBar').style.width=progress+'%'},showResults(){const accuracy=Math.round((this.score/this.totalQuestions)*100);const rank=this.calculateRank(accuracy);const trophy=this.getTrophy(accuracy);const message=this.getResultMessage(accuracy);document.getElementById('resultTrophy').textContent=trophy;document.getElementById('resultScore').textContent=this.score;document.getElementById('resultPercent').textContent=accuracy+'%';document.getElementById('resultCorrect').textContent=this.score;document.getElementById('resultAccuracy').textContent=accuracy+'%';document.getElementById('resultRankTitle').textContent=rank;document.getElementById('resultMessage').textContent=message;document.getElementById('resultBadge').textContent=rank;this.showScreen('resultScreen');this.playSound('complete')},calculateRank(accuracy){if(accuracy===100)return'Changi Master Explorer 🌟';if(accuracy>=90)return'Premium Class Traveller ✈️';if(accuracy>=80)return'Business Class Explorer 💼';if(accuracy>=70)return'Singapore Enthusiast 🇸🇬';if(accuracy>=60)return'Casual Tourist 🎒';if(accuracy>=50)return'Airport Wanderer ✨';return'First Time Visitor 🆕'},getTrophy(accuracy){if(accuracy>=90)return'🏆';if(accuracy>=75)return'🥇';if(accuracy>=60)return'🥈';if(accuracy>=45)return'🥉';return'🎖️'},getResultMessage(accuracy){if(accuracy>=100)return`${this.playerName}, you're a true Singapore Explorer! Masterful performance!`;if(accuracy>=90)return`Excellent work, ${this.playerName}! You know Singapore inside out!`;if(accuracy>=80)return`Great job, ${this.playerName}! You're very knowledgeable about Singapore!`;if(accuracy>=70)return`Good effort, ${this.playerName}! You've got solid Singapore knowledge!`;if(accuracy>=60)return`Nice try, ${this.playerName}! There's plenty more to discover!`;if(accuracy>=50)return`Keep learning, ${this.playerName}! Singapore has so much to offer!`;return`Welcome to Singapore, ${this.playerName}! Your adventure awaits!`},replay(){this.goToHome()},showScreen(screenId){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(screenId).classList.add('active')},shuffleArray(arr){const shuffled=[...arr];for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}return shuffled},playSound(type){console.log(`🔊 Playing sound: ${type}`)}};document.addEventListener('DOMContentLoaded',()=>{gameState.goToHome()});
+    </script>
+</body>
+</html>
