@@ -1,75 +1,286 @@
-class AudioManager {
-  constructor() {
-    this.enabled = true;
-    this.audioContext = null;
-    this.ambience = null;
-    this.currentScene = null;
-    this.loadSettings();
-  }
+/* ==========================================================
+   audio.js
+   An Interactive Love Letter from Singapore
+   ========================================================== */
 
-  init() {
-    if (!this.audioContext) {
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-  }
+(() => {
+    "use strict";
 
-  loadSettings() {
-    const saved = localStorage.getItem('audioEnabled');
-    this.enabled = saved !== null ? saved === 'true' : true;
-  }
+    const AudioEngine = {
 
-  saveSettings() {
-    localStorage.setItem('audioEnabled', this.enabled);
-  }
+        initialized: false,
 
-  toggle() {
-    this.enabled = !this.enabled;
-    this.saveSettings();
-    return this.enabled;
-  }
+        enabled: true,
 
-  playSound(frequency = 440, duration = 0.1, type = 'sine') {
-    if (!this.enabled || !this.audioContext) return;
+        context: null,
 
-    const now = this.audioContext.currentTime;
-    const osc = this.audioContext.createOscillator();
-    const gain = this.audioContext.createGain();
+        masterGain: null,
 
-    osc.connect(gain);
-    gain.connect(this.audioContext.destination);
+        musicGain: null,
 
-    osc.frequency.value = frequency;
-    osc.type = type;
+        sfxGain: null,
 
-    gain.gain.setValueAtTime(0.3, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        ambientOscillators: [],
 
-    osc.start(now);
-    osc.stop(now + duration);
-  }
+        init() {
 
-  playPassportStamp() {
-    // Double beep for stamp
-    this.playSound(800, 0.1);
-    setTimeout(() => this.playSound(1000, 0.1), 150);
-  }
+            if (this.initialized) return;
 
-  playSuccess() {
-    // Three ascending tones
-    this.playSound(523, 0.1); // C5
-    setTimeout(() => this.playSound(659, 0.1), 100); // E5
-    setTimeout(() => this.playSound(784, 0.2), 200); // G5
-  }
+            try {
 
-  playError() {
-    // Two descending tones
-    this.playSound(400, 0.1);
-    setTimeout(() => this.playSound(300, 0.2), 100);
-  }
+                const AudioContext =
+                    window.AudioContext ||
+                    window.webkitAudioContext;
 
-  playClick() {
-    this.playSound(600, 0.05);
-  }
-}
+                if (!AudioContext) return;
 
-const audioManager = new AudioManager();
+                this.context = new AudioContext();
+
+                this.masterGain = this.context.createGain();
+                this.musicGain = this.context.createGain();
+                this.sfxGain = this.context.createGain();
+
+                this.musicGain.connect(this.masterGain);
+                this.sfxGain.connect(this.masterGain);
+                this.masterGain.connect(this.context.destination);
+
+                this.masterGain.gain.value = 0.8;
+                this.musicGain.gain.value = 0.12;
+                this.sfxGain.gain.value = 0.4;
+
+                this.initialized = true;
+
+                this.restore();
+
+                this.startAmbient();
+
+            } catch (e) {
+
+                console.warn("Audio unavailable.", e);
+
+            }
+
+        },
+
+        resume() {
+
+            if (!this.context) return;
+
+            if (this.context.state === "suspended") {
+
+                this.context.resume();
+
+            }
+
+        },
+
+        startAmbient() {
+
+            if (!this.context || !this.enabled) return;
+
+            if (this.ambientOscillators.length > 0) return;
+
+            const notes = [196, 246.94, 293.66];
+
+            notes.forEach((frequency, index) => {
+
+                const oscillator = this.context.createOscillator();
+                const gain = this.context.createGain();
+
+                oscillator.type = "sine";
+                oscillator.frequency.value = frequency;
+
+                gain.gain.value = 0.015;
+
+                oscillator.connect(gain);
+                gain.connect(this.musicGain);
+
+                oscillator.start();
+
+                this.ambientOscillators.push({
+                    oscillator,
+                    gain
+                });
+
+                this.animateGain(gain, index);
+
+            });
+
+        },
+
+        animateGain(gainNode, seed) {
+
+            if (!this.enabled) return;
+
+            const animate = () => {
+
+                if (!this.context) return;
+
+                const target =
+                    0.008 +
+                    Math.random() * 0.018;
+
+                gainNode.gain.cancelScheduledValues(
+                    this.context.currentTime
+                );
+
+                gainNode.gain.linearRampToValueAtTime(
+                    target,
+                    this.context.currentTime + 4 + seed
+                );
+
+                setTimeout(animate, 4000 + seed * 500);
+
+            };
+
+            animate();
+
+        },
+
+        stopAmbient() {
+
+            this.ambientOscillators.forEach(item => {
+
+                try {
+
+                    item.oscillator.stop();
+
+                } catch (_) {}
+
+            });
+
+            this.ambientOscillators = [];
+
+        },
+
+        playSuccess() {
+
+            this.playTone(880, 0.12, "triangle");
+
+            setTimeout(() => {
+
+                this.playTone(1174, 0.18, "triangle");
+
+            }, 90);
+
+        },
+
+        playError() {
+
+            this.playTone(180, 0.18, "sawtooth");
+
+        },
+
+        playStamp() {
+
+            this.playTone(620, 0.05, "square");
+
+            setTimeout(() => {
+
+                this.playTone(930, 0.08, "triangle");
+
+            }, 45);
+
+        },
+
+        playClick() {
+
+            this.playTone(420, 0.03, "triangle");
+
+        },
+
+        playTone(frequency, duration, type = "sine") {
+
+            if (!this.enabled) return;
+
+            if (!this.context) return;
+
+            this.resume();
+
+            const oscillator =
+                this.context.createOscillator();
+
+            const gain =
+                this.context.createGain();
+
+            oscillator.type = type;
+            oscillator.frequency.value = frequency;
+
+            gain.gain.setValueAtTime(
+                0.0001,
+                this.context.currentTime
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.18,
+                this.context.currentTime + 0.01
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                this.context.currentTime + duration
+            );
+
+            oscillator.connect(gain);
+            gain.connect(this.sfxGain);
+
+            oscillator.start();
+
+            oscillator.stop(
+                this.context.currentTime + duration + 0.05
+            );
+
+        },
+
+        setEnabled(value) {
+
+            this.enabled = !!value;
+
+            if (!this.enabled) {
+
+                this.stopAmbient();
+
+            } else if (this.initialized) {
+
+                this.startAmbient();
+
+            }
+
+            this.save();
+
+        },
+
+        toggle() {
+
+            this.setEnabled(!this.enabled);
+
+        },
+
+        save() {
+
+            if (!window.Save?.set) return;
+
+            window.Save.set("audioEnabled", this.enabled);
+
+        },
+
+        restore() {
+
+            if (!window.Save?.get) return;
+
+            const value =
+                window.Save.get("audioEnabled");
+
+            if (typeof value === "boolean") {
+
+                this.enabled = value;
+
+            }
+
+        }
+
+    };
+
+    window.AudioEngine = AudioEngine;
+
+})();
