@@ -31,12 +31,12 @@ class UIManager {
             Your journey through Singapore begins now.
           </div>
           <div class="opening-action">
-            <button class="btn-primary btn-large" onclick="window.gameUI.handleStart()">Start Your Journey</button>
+            <button class="btn-primary btn-large" id="startBtn">Start Your Journey</button>
           </div>
         </div>
       </div>
     `;
-    window.gameUI.handleStart = onStart;
+    document.getElementById('startBtn').addEventListener('click', onStart);
   }
 
   renderPassportCreation(onSubmit) {
@@ -48,21 +48,25 @@ class UIManager {
           <div class="opening-subtitle">Before we issue your passport, what's your name?</div>
           <div class="opening-action" style="display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 400px; margin: 0 auto;">
             <input type="text" id="passengerName" placeholder="Your name" style="padding: 0.875rem; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: rgba(255,255,255,0.2); color: white; font-size: 1rem; text-align: center;" autofocus>
-            <button class="btn-primary btn-large" onclick="window.gameUI.submitName()">Issue Passport</button>
+            <button class="btn-primary btn-large" id="submitNameBtn">Issue Passport</button>
           </div>
         </div>
       </div>
     `;
     
     const input = document.getElementById('passengerName');
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') window.gameUI.submitName();
-    });
+    const submitBtn = document.getElementById('submitNameBtn');
     
-    window.gameUI.submitName = () => {
+    const handleSubmit = () => {
       const name = input.value.trim();
       if (name.length > 0) onSubmit(name);
     };
+    
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSubmit();
+    });
+    
+    submitBtn.addEventListener('click', handleSubmit);
   }
 
   renderPassportScreen(passportData) {
@@ -162,7 +166,7 @@ class UIManager {
           </div>
           <div class="airport-content" id="missionsList"></div>
           <div class="airport-footer">
-            <button class="btn-secondary" onclick="window.gameUI.currentOnProceed()">Back</button>
+            <button class="btn-secondary" id="backBtn">Back</button>
             <button class="btn-primary" id="proceedBtn" disabled>Ready to Explore Singapore</button>
           </div>
         </div>
@@ -173,7 +177,7 @@ class UIManager {
     missions.forEach((mission, idx) => {
       const isCompleted = mission.completed;
       missionsList.innerHTML += `
-        <div class="mission-card ${isCompleted ? 'mission-completed' : 'glass-panel'}" onclick="window.gameUI.onMissionClick(${idx})" style="cursor: ${isCompleted ? 'default' : 'pointer'};">
+        <div class="mission-card ${isCompleted ? 'mission-completed' : 'glass-panel'}" data-mission-idx="${idx}" style="cursor: ${isCompleted ? 'default' : 'pointer'};">
           <div class="mission-icon">${mission.icon}</div>
           <div class="mission-info">
             <div class="mission-title">${mission.title}</div>
@@ -184,12 +188,21 @@ class UIManager {
       `;
     });
     
+    // Add event listeners for mission cards
+    document.querySelectorAll('.mission-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.getAttribute('data-mission-idx'));
+        onMissionClick(idx);
+      });
+    });
+    
     const proceedBtn = document.getElementById('proceedBtn');
+    const backBtn = document.getElementById('backBtn');
     const allComplete = missions.every(m => m.completed);
     proceedBtn.disabled = !allComplete;
     
-    window.gameUI.onMissionClick = onMissionClick;
-    window.gameUI.currentOnProceed = onProceed;
+    proceedBtn.addEventListener('click', onProceed);
+    backBtn.addEventListener('click', onProceed);
   }
 
   renderHawkerScreen(sceneData, onChoiceClick) {
@@ -202,9 +215,9 @@ class UIManager {
               <div class="hawker-speaker">${sceneData.speaker}</div>
               <div class="hawker-text">${sceneData.dialogue}</div>
             </div>
-            <div class="hawker-options">
+            <div class="hawker-options" id="hawkerOptions">
               ${sceneData.options.map((opt, idx) => `
-                <button class="hawker-option" onclick="window.gameUI.onChoice(${idx})">${opt}</button>
+                <button class="hawker-option" data-option-idx="${idx}">${opt}</button>
               `).join('')}
             </div>
           </div>
@@ -212,7 +225,12 @@ class UIManager {
       </div>
     `;
     
-    window.gameUI.onChoice = onChoiceClick;
+    document.querySelectorAll('.hawker-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-option-idx'));
+        onChoiceClick(idx);
+      });
+    });
   }
 
   renderQuestionScreen(question, onAnswer) {
@@ -232,11 +250,16 @@ class UIManager {
     const optionsList = document.getElementById('optionsList');
     question.options.forEach((opt, idx) => {
       optionsList.innerHTML += `
-        <button class="question-option" onclick="window.gameUI.onAnswer(${idx})">${opt.text}</button>
+        <button class="question-option" data-option-idx="${idx}">${opt.text}</button>
       `;
     });
     
-    window.gameUI.onAnswer = onAnswer;
+    document.querySelectorAll('.question-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-option-idx'));
+        onAnswer(idx);
+      });
+    });
   }
 
   renderQuestionFeedback(question, selectedIdx, isCorrect) {
@@ -298,7 +321,7 @@ class UIManager {
             </div>
             
             <div class="results-actions">
-              <button class="btn-primary btn-large" onclick="window.gameUI.onRestart()">Start New Journey</button>
+              <button class="btn-primary btn-large" id="restartBtn">Start New Journey</button>
               <button class="btn-secondary btn-large">View Passport</button>
             </div>
           </div>
@@ -306,16 +329,17 @@ class UIManager {
       </div>
     `;
     
-    window.gameUI.onRestart = onRestart;
+    document.getElementById('restartBtn').addEventListener('click', onRestart);
   }
 
   renderAudioControl(enabled, onChange) {
     let control = document.querySelector('.audio-control');
     if (!control) {
-      const container = document.createElement('div');
-      container.innerHTML = '<button class="audio-control" id="audioControlBtn"></button>';
-      document.body.appendChild(container.firstChild);
-      control = document.getElementById('audioControlBtn');
+      const btn = document.createElement('button');
+      btn.className = 'audio-control';
+      btn.id = 'audioControlBtn';
+      document.body.appendChild(btn);
+      control = btn;
     }
     
     control.textContent = enabled ? '🔊' : '🔇';
