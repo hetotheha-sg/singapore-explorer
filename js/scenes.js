@@ -1,94 +1,202 @@
 /* ==========================================================
    scenes.js
    An Interactive Love Letter from Singapore
-   Production replacement (v2)
+   Version 3.0.0
    ========================================================== */
 
 (() => {
+
 "use strict";
 
 const Scenes = {
 
-    viewport:null,
-    index:0,
+    viewport: null,
+    index: 0,
 
-    init(viewport){
+    init(viewport) {
+
         this.viewport = viewport;
         this.index = 0;
+
         this.render();
+
     },
 
-    render(){
+    render() {
 
         const scene = window.QUESTIONS?.[this.index];
 
-        if(!scene){
+        if (!scene) {
+
             window.Game?.completeJourney?.();
             return;
+
         }
 
         const page = window.UI.createScene({
+
             image: scene.background,
-            background:"linear-gradient(135deg,#0B2742,#174D73)"
+            background: "linear-gradient(135deg,#0B2742,#174D73)"
+
         });
 
-        page.style.gap="18px";
+        page.style.gap = "18px";
 
-        const location=document.createElement("div");
-        location.textContent=scene.location;
-        location.style.cssText="letter-spacing:.25em;text-transform:uppercase;color:#D8B36A;font-size:.82rem;";
+        //--------------------------------------------------
+        // Location
+        //--------------------------------------------------
+
+        const location = document.createElement("div");
+
+        location.textContent = scene.location;
+
+        location.style.cssText =
+            "letter-spacing:.25em;" +
+            "text-transform:uppercase;" +
+            "color:#D8B36A;" +
+            "font-size:.82rem;";
+
         page.appendChild(location);
 
-        page.appendChild(window.UI.createTitle(scene.title));
-        page.appendChild(window.UI.createBody(scene.narration));
+        //--------------------------------------------------
+        // Title + Narration
+        //--------------------------------------------------
 
-        const card=document.createElement("div");
-        card.style.cssText="width:min(760px,100%);padding:32px;border-radius:22px;background:rgba(255,255,255,.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);";
+        page.appendChild(
+            window.UI.createTitle(scene.title)
+        );
 
-        const q=document.createElement("h3");
-        q.textContent=scene.question.prompt;
-        q.style.cssText="text-align:center;margin:0 0 24px;color:white;";
-        card.appendChild(q);
+        page.appendChild(
+            window.UI.createBody(scene.narration)
+        );
 
-        scene.question.options.forEach((opt,i)=>{
-            const b=document.createElement("button");
-            b.type="button";
-            b.textContent=opt;
-            b.className="primary-button";
-            b.style.display="block";
-            b.style.width="100%";
-            b.style.margin="12px 0 0";
+        //--------------------------------------------------
+        // Question Card
+        //--------------------------------------------------
 
-            b.onclick=async()=>{
+        const card = document.createElement("div");
 
-                if(i!==scene.question.answer){
+        card.style.cssText =
+            "width:min(760px,100%);" +
+            "padding:32px;" +
+            "border-radius:22px;" +
+            "background:rgba(255,255,255,.08);" +
+            "backdrop-filter:blur(12px);" +
+            "border:1px solid rgba(255,255,255,.1);";
+
+        const question = document.createElement("h3");
+
+        question.textContent = scene.question.prompt;
+
+        question.style.cssText =
+            "text-align:center;" +
+            "margin:0 0 24px;" +
+            "color:white;";
+
+        card.appendChild(question);
+
+        //--------------------------------------------------
+        // Answers
+        //--------------------------------------------------
+
+        let answered = false;
+
+        scene.question.options.forEach((option, index) => {
+
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "primary-button";
+
+            button.textContent = option;
+
+            button.style.display = "block";
+            button.style.width = "100%";
+            button.style.margin = "12px 0 0";
+
+            button.onclick = async () => {
+
+                if (answered) return;
+
+                //--------------------------------------------------
+                // Wrong Answer
+                //--------------------------------------------------
+
+                if (index !== scene.question.answer) {
+
                     window.AudioEngine?.playError?.();
-                    b.style.filter="brightness(.75)";
-                    setTimeout(()=>b.style.filter="",300);
+
+                    button.style.filter = "brightness(.75)";
+
+                    setTimeout(() => {
+
+                        button.style.filter = "";
+
+                    }, 250);
+
                     return;
+
                 }
 
+                answered = true;
+
+                //--------------------------------------------------
+                // Disable Buttons
+                //--------------------------------------------------
+
+                card.querySelectorAll("button").forEach(btn => {
+
+                    btn.disabled = true;
+
+                });
+
+                //--------------------------------------------------
+                // Success
+                //--------------------------------------------------
+
                 window.AudioEngine?.playSuccess?.();
-                window.Passport?.collect?.(scene.id);
+
+                await Promise.resolve(
+                    window.Passport?.collect?.(scene.id)
+                );
+
+                //--------------------------------------------------
+                // Love Letter
+                //--------------------------------------------------
+
+                await window.Letter?.show?.(
+
+                    scene.letter || {
+
+                        title: "Dear Traveller",
+
+                        body:
+                            "The best journeys are never measured by the places visited, but by the memories quietly carried home."
+
+                    }
+
+                );
+
+                //--------------------------------------------------
+                // Next Scene
+                //--------------------------------------------------
 
                 this.index++;
 
-                const next=window.QUESTIONS?.[this.index];
+                if (!window.QUESTIONS?.[this.index]) {
 
-                if(!next){
-                    setTimeout(()=>window.Game?.completeJourney?.(),500);
+                    window.Game?.completeJourney?.();
+
                     return;
+
                 }
 
-                const nextPage=window.UI.createScene({
-                    image:next.background,
-                    background:"linear-gradient(135deg,#0B2742,#174D73)"
-                });
+                this.render();
 
-                setTimeout(()=>this.render(),300);
             };
 
-            card.appendChild(b);
+            card.appendChild(button);
+
         });
 
         page.appendChild(card);
@@ -99,6 +207,6 @@ const Scenes = {
 
 };
 
-window.Scenes=Scenes;
+window.Scenes = Scenes;
 
 })();
