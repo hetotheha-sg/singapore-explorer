@@ -1,119 +1,93 @@
+
 /* ==========================================================
    diary.js
-   An Interactive Love Letter from Singapore
-   Version 1.0.0
+   Traveller's Diary
+   Launch Sprint MVP v2.0
    ========================================================== */
 
 (() => {
-
 "use strict";
 
 const Diary = {
 
-    version: "1.0.0",
+version:"2.0.0",
+entries:[],
 
-    entries: [],
+init(){
+    this.restore();
+},
 
-    init() {
+add(scene){
 
-        this.restore();
+    if(!scene) return;
 
-        console.log("Diary v1.0 Loaded");
+    if(this.entries.find(e=>e.id===scene.id)) return;
 
-    },
+    this.entries.push({
 
-    add(scene) {
+        id:scene.id,
+        location:scene.location,
+        title:scene.title,
+        date:new Date().toLocaleDateString(),
 
-        if (!scene) return;
+        letter:scene.letter?.body || "",
 
-        const exists = this.entries.some(
-            entry => entry.id === scene.id
-        );
+        memory:scene.memory || scene.passportStamp || "",
 
-        if (exists) return;
+        discovery:
+            scene.discovery?.body ||
+            scene.discovery ||
+            ""
 
-        this.entries.push({
+    });
 
-            id: scene.id,
+    this.save();
 
-            location: scene.location,
+},
 
-            title: scene.title,
+save(){
+    window.Save?.set?.(
+        "travellersDiary",
+        this.entries
+    );
+},
 
-            narration: scene.narration,
-
-            date: new Date().toLocaleDateString()
-
-        });
-
-        this.save();
-
-    },
-
-    getAll() {
-
-        return [...this.entries];
-
-    },
-
-    clear() {
-
-        this.entries = [];
-
-        this.save();
-
-    },
-
-    save() {
-
-        window.Save?.set?.(
-
-            "travelDiary",
-
-            this.entries
-
-        );
-
-    },
-
-    restore() {
-
-        const data = window.Save?.get?.(
-
-            "travelDiary",
-
+restore(){
+    this.entries =
+        window.Save?.get?.(
+            "travellersDiary",
             []
+        ) || [];
+},
 
-        );
+getAll(){
+    return [...this.entries];
+},
 
-        this.entries = Array.isArray(data)
+clear(){
+    this.entries=[];
+    this.save();
+},
 
-            ? data
+exportText(){
 
-            : [];
+    return this.entries.map(entry=>`
 
-    },
+📍 ${entry.location}
 
-    exportText() {
+❤️ Letter
+${entry.letter}
 
-        let output = "";
+📸 Memory
+${entry.memory}
 
-        this.entries.forEach(entry => {
+🧠 Discovery
+${entry.discovery}
 
-            output +=
-`📍 ${entry.location}
+----------------------------------------
+`).join("");
 
-${entry.narration}
-
-----------------------------------
-
-`;
-
-        });
-
-        return output;
-
-    }
+}
 
 };
 
