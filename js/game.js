@@ -98,6 +98,8 @@
 
             await this.fadeOut();
 
+            await window.Intro?.play?.();
+
             this.showScene(this.elements.game);
 
             /* ------------------------------------
