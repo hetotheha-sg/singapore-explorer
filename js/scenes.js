@@ -1,193 +1,104 @@
 /* ==========================================================
    scenes.js
    An Interactive Love Letter from Singapore
+   Production replacement (v2)
    ========================================================== */
 
 (() => {
-    "use strict";
+"use strict";
 
-    const Scenes = {
+const Scenes = {
 
-        viewport: null,
+    viewport:null,
+    index:0,
 
-        currentIndex: 0,
+    init(viewport){
+        this.viewport = viewport;
+        this.index = 0;
+        this.render();
+    },
 
-        init(viewport) {
+    render(){
 
-            this.viewport = viewport;
-            this.currentIndex = 0;
+        const scene = window.QUESTIONS?.[this.index];
 
-            this.renderCurrentScene();
-
-        },
-
-        renderCurrentScene() {
-
-            if (!window.UI) return;
-
-            const scene = window.QUESTIONS[this.currentIndex];
-
-            if (!scene) {
-
-                if (window.Game) {
-                    window.Game.completeJourney();
-                }
-
-                return;
-            }
-
-            const page = window.UI.createScene({
-                background:
-                    "linear-gradient(135deg,#0B2742,#174D73)"
-            });
-
-            page.style.padding = "72px";
-            page.style.gap = "18px";
-
-            /* ---------- Location ---------- */
-
-            const location = document.createElement("div");
-
-            location.textContent = scene.location;
-
-            location.style.fontSize = ".85rem";
-            location.style.letterSpacing = ".28em";
-            location.style.textTransform = "uppercase";
-            location.style.color = "#D8B36A";
-
-            page.appendChild(location);
-
-            /* ---------- Title ---------- */
-
-            page.appendChild(
-                window.UI.createTitle(scene.title)
-            );
-
-            /* ---------- Narration ---------- */
-
-            page.appendChild(
-                window.UI.createBody(scene.narration)
-            );
-
-            /* ---------- Question ---------- */
-
-            const card = document.createElement("div");
-
-            card.style.width = "min(760px,100%)";
-            card.style.marginTop = "34px";
-            card.style.padding = "34px";
-            card.style.borderRadius = "24px";
-            card.style.background = "rgba(255,255,255,.08)";
-            card.style.border =
-                "1px solid rgba(255,255,255,.10)";
-            card.style.backdropFilter = "blur(12px)";
-
-            const prompt = document.createElement("h3");
-
-            prompt.textContent = scene.question.prompt;
-
-            prompt.style.margin = "0 0 28px";
-            prompt.style.fontWeight = "600";
-            prompt.style.lineHeight = "1.5";
-            prompt.style.textAlign = "center";
-
-            card.appendChild(prompt);
-
-            const answers = document.createElement("div");
-
-            answers.style.display = "grid";
-            answers.style.gridTemplateColumns = "1fr";
-            answers.style.gap = "14px";
-
-            scene.question.options.forEach((option, index) => {
-
-                const button = document.createElement("button");
-
-                button.type = "button";
-
-                button.textContent = option;
-
-                button.style.padding = "18px";
-                button.style.borderRadius = "14px";
-                button.style.border =
-                    "1px solid rgba(255,255,255,.15)";
-                button.style.background =
-                    "rgba(255,255,255,.06)";
-                button.style.color = "#FFFFFF";
-                button.style.cursor = "pointer";
-                button.style.fontSize = "1rem";
-                button.style.transition = ".25s";
-
-                button.onmouseenter = () => {
-
-                    button.style.background =
-                        "rgba(255,255,255,.14)";
-
-                };
-
-                button.onmouseleave = () => {
-
-                    button.style.background =
-                        "rgba(255,255,255,.06)";
-
-                };
-
-                button.onclick = () => {
-
-                    const correct =
-                        index === scene.question.answer;
-
-                    if (correct) {
-
-                        button.style.background =
-                            "#D8B36A";
-
-                        button.style.color = "#13263E";
-
-                        window.AudioEngine?.playSuccess();
-
-                        window.Passport?.collect(scene.id);
-
-                        setTimeout(() => {
-
-                            this.currentIndex++;
-
-                            this.renderCurrentScene();
-
-                        }, 900);
-
-                    } else {
-
-                        button.style.background =
-                            "#A63C3C";
-
-                        window.AudioEngine?.playError();
-
-                        setTimeout(() => {
-
-                            button.style.background =
-                                "rgba(255,255,255,.06)";
-
-                        }, 450);
-
-                    }
-
-                };
-
-                answers.appendChild(button);
-
-            });
-
-            card.appendChild(answers);
-
-            page.appendChild(card);
-
-            window.UI.mount(page);
-
+        if(!scene){
+            window.Game?.completeJourney?.();
+            return;
         }
 
-    };
+        const page = window.UI.createScene({
+            image: scene.background,
+            background:"linear-gradient(135deg,#0B2742,#174D73)"
+        });
 
-    window.Scenes = Scenes;
+        page.style.gap="18px";
+
+        const location=document.createElement("div");
+        location.textContent=scene.location;
+        location.style.cssText="letter-spacing:.25em;text-transform:uppercase;color:#D8B36A;font-size:.82rem;";
+        page.appendChild(location);
+
+        page.appendChild(window.UI.createTitle(scene.title));
+        page.appendChild(window.UI.createBody(scene.narration));
+
+        const card=document.createElement("div");
+        card.style.cssText="width:min(760px,100%);padding:32px;border-radius:22px;background:rgba(255,255,255,.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);";
+
+        const q=document.createElement("h3");
+        q.textContent=scene.question.prompt;
+        q.style.cssText="text-align:center;margin:0 0 24px;color:white;";
+        card.appendChild(q);
+
+        scene.question.options.forEach((opt,i)=>{
+            const b=document.createElement("button");
+            b.type="button";
+            b.textContent=opt;
+            b.className="primary-button";
+            b.style.display="block";
+            b.style.width="100%";
+            b.style.margin="12px 0 0";
+
+            b.onclick=async()=>{
+
+                if(i!==scene.question.answer){
+                    window.AudioEngine?.playError?.();
+                    b.style.filter="brightness(.75)";
+                    setTimeout(()=>b.style.filter="",300);
+                    return;
+                }
+
+                window.AudioEngine?.playSuccess?.();
+                window.Passport?.collect?.(scene.id);
+
+                this.index++;
+
+                const next=window.QUESTIONS?.[this.index];
+
+                if(!next){
+                    setTimeout(()=>window.Game?.completeJourney?.(),500);
+                    return;
+                }
+
+                const nextPage=window.UI.createScene({
+                    image:next.background,
+                    background:"linear-gradient(135deg,#0B2742,#174D73)"
+                });
+
+                setTimeout(()=>this.render(),300);
+            };
+
+            card.appendChild(b);
+        });
+
+        page.appendChild(card);
+
+        window.UI.transition(page);
+
+    }
+
+};
+
+window.Scenes=Scenes;
 
 })();
