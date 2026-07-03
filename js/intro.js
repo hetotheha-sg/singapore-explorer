@@ -3,7 +3,7 @@
 Singapore Explorer
 intro.js
 Arrival Experience
-Version 1.0.1
+Version 2.0.0
 =========================================================
 */
 
@@ -11,52 +11,77 @@ Version 1.0.1
 
     "use strict";
 
-    console.log("Intro Module v1.0 Loaded");
+    console.log("Intro Module v2.0 Loaded");
+
+    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     const Intro = {
 
         async play() {
 
-            console.log("Intro.play() started");
+            const overlay = document.createElement("div");
 
-            return new Promise(resolve => {
+            overlay.id = "intro-overlay";
 
-                const overlay = document.createElement("div");
+            Object.assign(overlay.style, {
+                position: "fixed",
+                inset: "0",
+                background: "#000",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: "999999",
+                color: "#fff",
+                fontFamily: "Georgia, serif"
+            });
 
-                overlay.id = "intro-overlay";
+            document.body.appendChild(overlay);
 
-                overlay.innerHTML = `
-                    <div class="intro-card">
-                        <h1 style="margin-bottom:20px;">Welcome to Singapore.</h1>
-                        <p>An Interactive Love Letter</p>
-                    </div>
-                `;
+            const showText = async (text, size = "42px") => {
 
-                Object.assign(overlay.style, {
-                    position: "fixed",
-                    inset: "0",
-                    background: "rgba(0,0,0,0.92)",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    zIndex: "999999",
-                    color: "white",
-                    opacity: "1"
+                overlay.innerHTML = "";
+
+                const div = document.createElement("div");
+
+                div.textContent = text;
+
+                Object.assign(div.style, {
+                    opacity: "0",
+                    transition: "opacity 1.2s ease",
+                    fontSize: size,
+                    maxWidth: "900px",
+                    textAlign: "center",
+                    lineHeight: "1.6",
+                    padding: "40px"
                 });
 
-                document.body.appendChild(overlay);
+                overlay.appendChild(div);
 
-                setTimeout(() => {
+                requestAnimationFrame(() => {
+                    div.style.opacity = "1";
+                });
 
-                    overlay.remove();
+                await wait(2800);
 
-                    console.log("Intro finished");
+                div.style.opacity = "0";
 
-                    resolve();
+                await wait(1200);
 
-                }, 3000);
+            };
 
-            });
+            await showText(
+                "Every journey begins with an arrival."
+            );
+
+            await showText(
+                "Some arrivals change where you are."
+            );
+
+            await showText(
+                "Some change how you see a place forever."
+            );
+
+            overlay.remove();
 
         }
 
