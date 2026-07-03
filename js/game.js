@@ -4,7 +4,9 @@ class Game {
     this.currentDestination = null;
     this.currentMission = null;
     this.currentScene = null;
-    this.answeredQuestions = [];\n    this.missionProgress = {};\n    this.destinationOrder = [];
+    this.answeredQuestions = [];
+this.missionProgress = {};
+this.destinationOrder = [];
     this.sessionStats = {\n      totalQuestions: 0,\n      correctAnswers: 0,\n      stampsEarned: 0,\n      missionsCompleted: 0\n    };
     this.currentQuestion = null;
     this.init();
