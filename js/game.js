@@ -4,15 +4,9 @@ class Game {
     this.currentDestination = null;
     this.currentMission = null;
     this.currentScene = null;
-    this.answeredQuestions = [];
-this.missionProgress = {};
-this.destinationOrder = [];
-this.sessionStats = {
-  totalQuestions: 0,
-  correctAnswers: 0,
-  stampsEarned: 0,
-  missionsCompleted: 0
-};    this.currentQuestion = null;
+    this.answeredQuestions = [];\n    this.missionProgress = {};\n    this.destinationOrder = [];
+    this.sessionStats = {\n      totalQuestions: 0,\n      correctAnswers: 0,\n      stampsEarned: 0,\n      missionsCompleted: 0\n    };
+    this.currentQuestion = null;
     this.init();
   }
 
@@ -146,9 +140,10 @@ this.sessionStats = {
     
     uiManager.renderQuestionFeedback(question, selectedIdx, isCorrect);
     
-   setTimeout(() => {
-  this.showJournalEntry(question, isCorrect);
-}, 2000);
+    setTimeout(() => {
+      this.completeMission();
+    }, 2500);
+  }
 
   completeMission() {
     const destination = this.currentDestination;
@@ -249,22 +244,7 @@ this.sessionStats = {
     uiManager.renderResultsScreen(stats, () => this.startNewGame());
     this.updateAudioControl();
   }
-showJournalEntry(question, isCorrect) {
-  const title = question.journalTitle || "Explorer's Journal";
 
-  const content =
-    question.journalEntry ||
-    "Every journey teaches us something new about Singapore.";
-
-  uiManager.renderJournalEntry({
-    title,
-    content,
-    wasCorrect: isCorrect,
-    onContinue: () => {
-      this.completeMission();
-    }
-  });
-}
   updateAudioControl() {
     uiManager.renderAudioControl(audioManager.enabled, () => {
       audioManager.toggle();
