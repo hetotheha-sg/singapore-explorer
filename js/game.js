@@ -90,37 +90,44 @@
 
         },
 
-        async startJourney() {
+async startJourney() {
 
-            if (this.state.started) return;
+    if (this.state.started) return;
 
-            this.state.started = true;
+    this.state.started = true;
 
-            await this.fadeOut();
+    await this.fadeOut();
 
-            await window.Intro?.play?.();
+    await window.Intro?.play?.();
 
-            this.showScene(this.elements.game);
+    this.showScene(this.elements.game);
 
-            /* ------------------------------------
-               INITIALISE IN CORRECT ORDER
-            -------------------------------------*/
+    try {
+        console.log("1. UI");
+        window.UI.init();
 
-            window.UI?.init?.();
+        console.log("2. Passport");
+        window.Passport.init();
 
-            window.Passport?.init?.();
+        console.log("3. Audio");
+        window.AudioEngine.init();
 
-            window.AudioEngine?.init?.();
+        console.log("4. Scenes");
+        window.Scenes.init(this.elements.viewport);
 
-            window.Scenes?.init?.(this.elements.viewport);
+        console.log("5. Save");
+        this.state.currentScene = 0;
+        this.save();
 
-            this.state.currentScene = 0;
+    } catch (err) {
 
-            this.save();
+        console.error("STARTUP FAILED:", err);
 
-            await this.fadeIn();
+    }
 
-        },
+    await this.fadeIn();
+
+}
 
         completeJourney() {
 
