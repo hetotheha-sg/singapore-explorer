@@ -3,7 +3,7 @@
 Singapore Explorer
 intro.js
 Arrival Experience
-Version 1.0.0
+Version 1.0.1
 =========================================================
 */
 
@@ -11,9 +11,13 @@ Version 1.0.0
 
     "use strict";
 
+    console.log("Intro Module v1.0 Loaded");
+
     const Intro = {
 
         async play() {
+
+            console.log("Intro.play() started");
 
             return new Promise(resolve => {
 
@@ -23,76 +27,34 @@ Version 1.0.0
 
                 overlay.innerHTML = `
                     <div class="intro-card">
-
-                        <div class="intro-small">
-                            An Interactive Love Letter
-                        </div>
-
-                        <h1>Welcome to Singapore.</h1>
-
-                        <p>
-                            Singapore never asks the traveller to be impressed.
-                        </p>
-
-                        <p>
-                            It simply shares its story honestly.
-                        </p>
-
-                        <p class="intro-final">
-                            The traveller decides how to feel.
-                        </p>
-
+                        <h1 style="margin-bottom:20px;">Welcome to Singapore.</h1>
+                        <p>An Interactive Love Letter</p>
                     </div>
                 `;
 
                 Object.assign(overlay.style, {
-
                     position: "fixed",
                     inset: "0",
-                    background: "rgba(0,0,0,0.88)",
+                    background: "rgba(0,0,0,0.92)",
                     display: "flex",
-                    alignItems: "center",
                     justifyContent: "center",
-                    zIndex: "99999",
-                    opacity: "0",
-                    transition: "opacity 600ms"
-
-                });
-
-                const card = overlay.querySelector(".intro-card");
-
-                Object.assign(card.style, {
-
+                    alignItems: "center",
+                    zIndex: "999999",
                     color: "white",
-                    textAlign: "center",
-                    maxWidth: "720px",
-                    padding: "48px",
-                    lineHeight: "1.8",
-                    fontFamily: "Georgia, serif"
-
+                    opacity: "1"
                 });
 
                 document.body.appendChild(overlay);
 
-                requestAnimationFrame(() => {
-
-                    overlay.style.opacity = "1";
-
-                });
-
                 setTimeout(() => {
 
-                    overlay.style.opacity = "0";
+                    overlay.remove();
 
-                    setTimeout(() => {
+                    console.log("Intro finished");
 
-                        overlay.remove();
+                    resolve();
 
-                        resolve();
-
-                    }, 700);
-
-                }, 5000);
+                }, 3000);
 
             });
 
