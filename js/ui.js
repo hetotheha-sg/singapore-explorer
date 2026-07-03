@@ -262,7 +262,62 @@ class UIManager {
     });
   }
 
-  renderQuestionFeedback(question, selectedIdx, isCorrect) {
+  renderQuestionFeedback(renderJournalEntry(data) {
+  this.clear();
+
+  this.app.innerHTML = `
+    <div class="screen screen-journal">
+
+      <div class="journal-book glass-panel">
+
+        <div class="journal-header">
+
+          <div class="journal-icon">📖</div>
+
+          <div class="journal-title">
+            Explorer's Passport Notes
+          </div>
+
+          <div class="journal-location">
+            ${data.title}
+          </div>
+
+        </div>
+
+        <div class="journal-content">
+
+          <div class="journal-stamp">
+            ${data.wasCorrect ? "🛂 Well Spotted!" : "💡 Nice Discovery!"}
+          </div>
+
+          <div class="journal-text">
+
+            ${data.content}
+
+          </div>
+
+        </div>
+
+        <div class="journal-footer">
+
+          <button class="btn-primary btn-large" id="continueJourney">
+
+            Continue Journey →
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  document
+    .getElementById("continueJourney")
+    .addEventListener("click", data.onContinue);
+}
+  question, selectedIdx, isCorrect) {
     const optionsList = document.getElementById('optionsList');
     const options = optionsList.querySelectorAll('.question-option');
     
