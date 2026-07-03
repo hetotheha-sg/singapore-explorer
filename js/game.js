@@ -4,15 +4,9 @@ class Game {
     this.currentDestination = null;
     this.currentMission = null;
     this.currentScene = null;
-    this.answeredQuestions = [];
-    this.missionProgress = {};
-    this.destinationOrder = [];
-    this.sessionStats = {
-      totalQuestions: 0,
-      correctAnswers: 0,
-      stampsEarned: 0,
-      missionsCompleted: 0
-    };
+    this.answeredQuestions = [];\n    this.missionProgress = {};\n    this.destinationOrder = [];
+    this.sessionStats = {\n      totalQuestions: 0,\n      correctAnswers: 0,\n      stampsEarned: 0,\n      missionsCompleted: 0\n    };
+    this.currentQuestion = null;
     this.init();
   }
 
@@ -42,7 +36,7 @@ class Game {
       missionsCompleted: 0
     };
     
-    window.gameUI = uiManager;
+    window.game = this;
     this.renderOpeningScreen();
   }
 
@@ -53,7 +47,7 @@ class Game {
     this.answeredQuestions = savedData.answeredQuestions || [];
     this.missionProgress = savedData.missionProgress || {};
     
-    window.gameUI = uiManager;
+    window.game = this;
     this.renderAirportScreen();
   }
 
@@ -87,16 +81,19 @@ class Game {
   }
 
   renderAirportScreen() {
-    const missions = getMissionsByDestination('changi');
+    const destination = this.currentDestination || 'changi';
+    const missions = getMissionsByDestination(destination);
     const missionData = missions.map(m => ({
       ...m,
-      completed: this.isMissionCompleted('changi', m.id)
+      completed: this.isMissionCompleted(destination, m.id)
     }));
     
     uiManager.renderAirportScreen(
       missionData,
-      (idx) => this.selectMission(missions[idx].id),
-      () => this.proceedFromAirport()
+      (idx) => {
+        window.game.selectMission(missions[idx].id);
+      },
+      () => this.proceedFromCurrentDestination()
     );
     
     this.updateAudioControl();
@@ -108,7 +105,7 @@ class Game {
   }
 
   selectMission(missionId) {
-    const missions = getMissionsByDestination('changi');
+    const missions = getMissionsByDestination(this.currentDestination);
     const mission = missions.find(m => m.id === missionId);
     
     if (mission) {
@@ -121,13 +118,15 @@ class Game {
     const question = getQuestionById(questionId);
     if (!question) return;
     
+    this.currentQuestion = question;
     this.state = 'question';
     uiManager.renderQuestionScreen(question, (selectedIdx) => {
-      this.handleAnswer(question, selectedIdx);
+      window.game.handleAnswer(selectedIdx);
     });
   }
 
-  handleAnswer(question, selectedIdx) {
+  handleAnswer(selectedIdx) {
+    const question = this.currentQuestion;
     const isCorrect = question.options[selectedIdx].correct;
     
     this.sessionStats.totalQuestions++;
@@ -145,42 +144,63 @@ class Game {
       if (isCorrect) {
         this.completeMission();
       } else {
-        this.renderAirportScreen();
+        // Retry same question
+        this.showQuestion(question.id);
       }
     }, 3000);
   }
 
   completeMission() {
-    if (!this.missionProgress['changi']) {
-      this.missionProgress['changi'] = [];
+    const destination = this.currentDestination;
+    
+    if (!this.missionProgress[destination]) {
+      this.missionProgress[destination] = [];
     }
-    this.missionProgress['changi'].push(this.currentMission.id);
-    this.sessionStats.missionsCompleted++;
+    
+    if (!this.missionProgress[destination].includes(this.currentMission.id)) {
+      this.missionProgress[destination].push(this.currentMission.id);
+      this.sessionStats.missionsCompleted++;
+    }
     
     // Check if all missions done
-    const allMissions = getMissionsByDestination('changi');
+    const allMissions = getMissionsByDestination(destination);
     const allComplete = allMissions.every(m => 
-      this.missionProgress['changi'].includes(m.id)
+      this.missionProgress[destination].includes(m.id)
     );
     
     if (allComplete) {
-      passport.addStamp('changi');
+      passport.addStamp(destination);
       this.sessionStats.stampsEarned++;
-      this.proceedToHawker();
+      
+      if (destination === 'changi') {
+        this.proceedToHawker();
+      } else if (destination === 'hawker') {
+        this.showResults();
+      }
     } else {
+      // Return to mission screen
       this.renderAirportScreen();
     }
   }
 
-  proceedFromAirport() {
-    const allMissions = getMissionsByDestination('changi');
+  proceedFromCurrentDestination() {
+    const destination = this.currentDestination;
+    const allMissions = getMissionsByDestination(destination);
     const allComplete = allMissions.every(m => 
-      this.isMissionCompleted('changi', m.id)
+      this.isMissionCompleted(destination, m.id)
     );
     
     if (allComplete) {
-      this.proceedToHawker();
+      if (destination === 'changi') {
+        this.proceedToHawker();
+      } else if (destination === 'hawker') {
+        this.showResults();
+      }
     }
+  }
+
+  proceedFromAirport() {
+    this.proceedFromCurrentDestination();
   }
 
   proceedToHawker() {
@@ -197,49 +217,18 @@ class Game {
     
     const scene = getHawkerScene(sceneIndex);
     uiManager.renderHawkerScreen(scene, (optionIdx) => {
-      this.renderHawkerSequence(sceneIndex + 1);
+      window.game.renderHawkerSequence(sceneIndex + 1);
     });
     
     this.updateAudioControl();
   }
 
   enterHawkerMissions() {
-    const missions = getMissionsByDestination('hawker');
-    const missionData = missions.map(m => ({
-      ...m,
-      completed: this.isMissionCompleted('hawker', m.id)
-    }));
-    
-    uiManager.renderAirportScreen(
-      missionData,
-      (idx) => this.selectHawkerMission(missions[idx].id),
-      () => this.proceedFromHawker()
-    );
-    
-    this.updateAudioControl();
-  }
-
-  selectHawkerMission(missionId) {
-    const missions = getMissionsByDestination('hawker');
-    const mission = missions.find(m => m.id === missionId);
-    
-    if (mission) {
-      this.currentMission = mission;
-      this.showQuestion(mission.question);
-    }
+    this.renderAirportScreen();
   }
 
   proceedFromHawker() {
-    const allMissions = getMissionsByDestination('hawker');
-    const allComplete = allMissions.every(m => 
-      this.isMissionCompleted('hawker', m.id)
-    );
-    
-    if (allComplete) {
-      passport.addStamp('hawker');
-      this.sessionStats.stampsEarned++;
-      this.showResults();
-    }
+    this.proceedFromCurrentDestination();
   }
 
   showResults() {
@@ -250,8 +239,10 @@ class Game {
       stamps: passport.stamps.length,
       missionsCompleted: this.sessionStats.missionsCompleted,
       questionsAnswered: this.sessionStats.totalQuestions,
-      accuracy: Math.round((this.sessionStats.correctAnswers / this.sessionStats.totalQuestions) * 100),
-      destinations: this.currentDestination === 'hawker' ? 2 : 1
+      accuracy: this.sessionStats.totalQuestions > 0 
+        ? Math.round((this.sessionStats.correctAnswers / this.sessionStats.totalQuestions) * 100)
+        : 0,
+      destinations: passport.stamps.length
     };
     
     saveManager.saveStats(stats);
