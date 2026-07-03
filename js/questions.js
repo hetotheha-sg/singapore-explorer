@@ -11,7 +11,7 @@ const QUESTIONS = {
         { text: 'Gateway', correct: false },
         { text: 'Sky', correct: false }
       ],
-      insight: 'Changi is named after a coastal area. The name reflects Singapore\'s maritime heritage.'
+      journalTitle:  journalEntry: 'Changi is named after a coastal area. The name reflects Singapore\'s maritime heritage.'
     },
     {
       id: 'changi_2',
@@ -24,7 +24,7 @@ const QUESTIONS = {
         { text: '15 years', correct: false },
         { text: 'Every year since opening', correct: false }
       ],
-      insight: 'Changi\'s consistent excellence is a source of national pride and reflects Singapore\'s commitment to quality.'
+      journalTitle:  journalEntry: 'Changi\'s consistent excellence is a source of national pride and reflects Singapore\'s commitment to quality.'
     },
     {
       id: 'changi_3',
@@ -37,7 +37,7 @@ const QUESTIONS = {
         { text: 'Sky Garden', correct: false },
         { text: 'Water Mirror', correct: false }
       ],
-      insight: 'The Rain Vortex is a seven-story indoor waterfall—the tallest in the world. It represents Singapore\'s blend of nature and modernity.'
+      journalTitle:  journalEntry: 'The Rain Vortex is a seven-story indoor waterfall—the tallest in the world. It represents Singapore\'s blend of nature and modernity.'
     },
     {
       id: 'changi_4',
@@ -50,7 +50,7 @@ const QUESTIONS = {
         { text: 'Sunken Garden', correct: false },
         { text: 'Night Garden', correct: false }
       ],
-      insight: 'The Butterfly Garden is a sanctuary inside the airport—a peaceful space that represents Singapore\'s commitment to nature conservation.'
+      journalTitle:  journalEntry: 'The Butterfly Garden is a sanctuary inside the airport—a peaceful space that represents Singapore\'s commitment to nature conservation.'
     },
     {
       id: 'changi_5',
@@ -63,7 +63,7 @@ const QUESTIONS = {
         { text: 'No, not allowed at all', correct: false },
         { text: 'Only if declared', correct: false }
       ],
-      insight: 'Small toys and souvenirs are perfectly fine in cabin baggage. It\'s another reason why Changi is so traveler-friendly.'
+      journalTitle:  journalEntry: 'Small toys and souvenirs are perfectly fine in cabin baggage. It\'s another reason why Changi is so traveler-friendly.'
     }
   ],
   hawker: [
@@ -78,7 +78,7 @@ const QUESTIONS = {
         { text: 'Because they forgot it', correct: false },
         { text: 'To mark it as closed', correct: false }
       ],
-      insight: '"Chope" is a uniquely Singaporean practice. A tissue packet, bag, or even a chair reserves a table in a hawker centre. It\'s an informal but universally respected system.'
+      journalTitle:  journalEntry: '"Chope" is a uniquely Singaporean practice. A tissue packet, bag, or even a chair reserves a table in a hawker centre. It\'s an informal but universally respected system.'
     },
     {
       id: 'hawker_2',
@@ -91,7 +91,7 @@ const QUESTIONS = {
         { text: 'Coffee with condensed milk', correct: false },
         { text: 'Iced coffee', correct: false }
       ],
-      insight: 'Kopi ordering is an art form in Singapore. "Kopi O" = black coffee. "Kopi C" = coffee with evaporated milk. "Kopi" = coffee with condensed milk. Learning these is your first step to belonging.'
+      journalTitle:  journalEntry: 'Kopi ordering is an art form in Singapore. "Kopi O" = black coffee. "Kopi C" = coffee with evaporated milk. "Kopi" = coffee with condensed milk. Learning these is your first step to belonging.'
     },
     {
       id: 'hawker_3',
@@ -104,7 +104,7 @@ const QUESTIONS = {
         { text: 'Peranakan cuisine', correct: false },
         { text: 'Indian bread', correct: false }
       ],
-      insight: 'In 2020, UNESCO recognized Hawker Culture as Intangible Cultural Heritage of Humanity. Hawker centres are where Singapore comes together—people from all communities, all backgrounds, sharing meals.'
+      journalTitle:  journalEntry: 'In 2020, UNESCO recognized Hawker Culture as Intangible Cultural Heritage of Humanity. Hawker centres are where Singapore comes together—people from all communities, all backgrounds, sharing meals.'
     },
     {
       id: 'hawker_4',
@@ -117,7 +117,7 @@ const QUESTIONS = {
         { text: '5 main groups', correct: false },
         { text: 'Everyone', correct: false }
       ],
-      insight: 'Chinese, Malay, and Indian communities all have their signature hawker dishes. Hawker centres are where Singapore\'s multiculturalism is most alive and delicious.'
+      journalTitle:  journalEntry: 'Chinese, Malay, and Indian communities all have their signature hawker dishes. Hawker centres are where Singapore\'s multiculturalism is most alive and delicious.'
     },
     {
       id: 'hawker_5',
@@ -130,7 +130,7 @@ const QUESTIONS = {
         { text: 'It uses western cooking techniques', correct: false },
         { text: 'It uses less spice', correct: false }
       ],
-      insight: 'Singaporean hawker food is uniquely fusion. The hawker centres became melting pots where Chinese cooks learned from Indian spice merchants, where Malay techniques influenced Chinese dishes. It\'s culinary multiculturalism.'
+      journalTitle:  journalEntry: 'Singaporean hawker food is uniquely fusion. The hawker centres became melting pots where Chinese cooks learned from Indian spice merchants, where Malay techniques influenced Chinese dishes. It\'s culinary multiculturalism.'
     }
   ]
 };
