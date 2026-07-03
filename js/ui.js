@@ -238,19 +238,30 @@ UI.Experience = {
 
     async hide() {
 
-        this.active = false;
-        this.current = null;
+    this.active = false;
 
-        return Promise.resolve();
+    const card = document.getElementById("experience-card");
+
+    if (card) {
+
+        card.style.opacity = "0";
+
+        await new Promise(resolve => setTimeout(resolve, 350));
+
+        card.remove();
 
     }
 
+    this.current = null;
+
+    return Promise.resolve();
+
+},
+
+isShowing() {
+
+    return this.active;
+
+}
+
 };
-
-/* ==========================================================
-   Export
-   ========================================================== */
-
-window.UI = UI;
-
-})();
