@@ -146,15 +146,9 @@ this.sessionStats = {
     
     uiManager.renderQuestionFeedback(question, selectedIdx, isCorrect);
     
-    setTimeout(() => {
-      if (isCorrect) {
-        this.completeMission();
-      } else {
-        // Retry same question
-        this.showQuestion(question.id);
-      }
-    }, 3000);
-  }
+   setTimeout(() => {
+  this.showJournalEntry(question, isCorrect);
+}, 2000);
 
   completeMission() {
     const destination = this.currentDestination;
@@ -255,7 +249,22 @@ this.sessionStats = {
     uiManager.renderResultsScreen(stats, () => this.startNewGame());
     this.updateAudioControl();
   }
+showJournalEntry(question, isCorrect) {
+  const title = question.journalTitle || "Explorer's Journal";
 
+  const content =
+    question.journalEntry ||
+    "Every journey teaches us something new about Singapore.";
+
+  uiManager.renderJournalEntry({
+    title,
+    content,
+    wasCorrect: isCorrect,
+    onContinue: () => {
+      this.completeMission();
+    }
+  });
+}
   updateAudioControl() {
     uiManager.renderAudioControl(audioManager.enabled, () => {
       audioManager.toggle();
