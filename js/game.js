@@ -1,6 +1,7 @@
 /* ==========================================================
    game.js
    An Interactive Love Letter from Singapore
+   Development Build v1.2.0
    ========================================================== */
 
 (() => {
@@ -8,7 +9,7 @@
 
     const Game = {
 
-        version: "1.1.0",
+        version: "1.2.0",
 
         state: {
             started: false,
@@ -24,9 +25,16 @@
 
             if (this.initialized) return;
 
+            // --------------------------------------------------
+            // DEVELOPMENT MODE
+            // Always begin with a fresh journey.
+            // Resume support will be implemented later.
+            // --------------------------------------------------
+
+            window.Save?.clear?.();
+
             this.cacheElements();
             this.bindEvents();
-            this.restore();
 
             this.showIntro();
 
@@ -90,52 +98,53 @@
 
         },
 
-async startJourney() {
+        async startJourney() {
 
-    if (this.state.started) return;
+            if (this.state.started) return;
 
-    this.state.started = true;
+            this.state.started = true;
 
-    await this.fadeOut();
+            await this.fadeOut();
 
-    await window.Intro?.play?.();
+            await window.Intro?.play?.();
 
-    this.showScene(this.elements.game);
+            this.showScene(this.elements.game);
 
-    try {
-        console.log("1. UI");
-        window.UI.init();
+            try {
 
-        console.log("2. Passport");
-        window.Passport.init();
+                window.UI.init();
 
-        console.log("3. Audio");
-        window.AudioEngine.init();
+                window.Passport?.init?.();
 
-        console.log("4. Scenes");
-        window.Scenes.init(this.elements.viewport);
+                window.AudioEngine?.init?.();
 
-        console.log("5. Save");
-        this.state.currentScene = 0;
-        this.save();
+                window.Scenes?.init?.(
+                    this.elements.viewport
+                );
 
-    } catch (err) {
+                this.state.currentScene = 0;
 
-        console.error("STARTUP FAILED:", err);
+            } catch (err) {
 
-    }
+                console.error(err);
 
-    await this.fadeIn();
+                this.state.started = false;
 
-}
+                this.showIntro();
+
+                return;
+
+            }
+
+            await this.fadeIn();
+
+        },
 
         completeJourney() {
 
             this.state.completed = true;
 
             this.showScene(this.elements.ending);
-
-            this.save();
 
         },
 
@@ -189,31 +198,16 @@ async startJourney() {
 
         save() {
 
-            window.Save?.set?.("gameState", {
-
-                version: this.version,
-                started: this.state.started,
-                completed: this.state.completed,
-                currentScene: this.state.currentScene
-
-            });
+            // Save system disabled during development.
 
         },
 
         restore() {
 
-    const data = window.Save?.get?.("gameState");
+            // Resume system disabled during development.
 
-    if (!data) return;
+        }
 
-    this.state.completed = !!data.completed;
-    this.state.currentScene = data.currentScene || 0;
-
-    // Never lock the Start button on page refresh.
-    // Resume support will be implemented later.
-    this.state.started = false;
-
-}
     };
 
     window.Game = Game;
