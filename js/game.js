@@ -7,8 +7,12 @@ class Game {
     this.answeredQuestions = [];
 this.missionProgress = {};
 this.destinationOrder = [];
-    this.sessionStats = {\n      totalQuestions: 0,\n      correctAnswers: 0,\n      stampsEarned: 0,\n      missionsCompleted: 0\n    };
-    this.currentQuestion = null;
+this.sessionStats = {
+  totalQuestions: 0,
+  correctAnswers: 0,
+  stampsEarned: 0,
+  missionsCompleted: 0
+};    this.currentQuestion = null;
     this.init();
   }
 
