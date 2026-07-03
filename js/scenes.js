@@ -25,7 +25,7 @@ const MISSIONS = {
       id: 'airport_excellence',
       title: 'Airport Excellence',
       icon: '⭐',
-      description: 'Learn about Changi's consistent world-class recognition.',
+      description: 'Learn about Changi\'s consistent world-class recognition.',
       question: 'changi_2'
     },
     {
@@ -62,7 +62,7 @@ const MISSIONS = {
       id: 'multicultural_dining',
       title: 'Multicultural Melting Pot',
       icon: '🍜',
-      description: 'Experience Singapore's food story.',
+      description: 'Experience Singapore\'s food story.',
       question: 'hawker_4'
     },
     {
@@ -98,7 +98,7 @@ const HAWKER_SCENES = [
     speaker: 'Hawker Auntie',
     dialogue: 'See all these people, different races, different backgrounds, all come here to eat. This is Singapore lor. Family table, friend table, office people—everyone come same place.',
     options: [
-      'That's really special',
+      'That\'s really special',
       'I want to understand more',
       'Tell me a story'
     ]
