@@ -1,270 +1,161 @@
+
 /* ==========================================================
    questions.js
-   An Interactive Love Letter from Singapore
-   Version 2.0.0
+   Moments Database
+   Launch Sprint MVP v3.0
    ========================================================== */
 
 (() => {
-
 "use strict";
 
-window.QUESTIONS = [
-
-/* ==========================================================
-   1. CHANGI AIRPORT
-   ========================================================== */
+window.MOMENTS = [
 
 {
-    id: 1,
-
-    slug: "arrival",
-
-    location: "Changi Airport",
-
-    title: "Welcome to Singapore",
-
-    narration:
-        "Every journey begins with a warm welcome. As you arrive in Singapore, your adventure starts not with a destination, but with curiosity.",
-
-    passportStamp: "Arrival",
-
-    background: "assets/scenes/changi-arrival.jpg",
-
-    letter: {
-
-        title: "Dear Traveller",
-
-        body:
-            "Every unforgettable journey begins with a single arrival. We hope the warmth you feel today stays with you long after your footprints leave Singapore."
-
-    },
-
-    question: {
-
-        type: "multiple-choice",
-
-        prompt:
-            "What is Singapore's world-famous airport called?",
-
-        options: [
-
-            "Marina Airport",
-            "Lion Airport",
-            "Changi Airport",
-            "Merlion Airport"
-
-        ],
-
-        answer: 2
-
-    }
-
+ id:1,
+ slug:"arrival",
+ location:"Changi Airport",
+ title:"Welcome.",
+ background:"assets/scenes/changi-arrival.jpg",
+ value:"Hospitality",
+ emotion:"Wonder",
+ memory:"Boarding Pass",
+ letter:{
+   title:"Welcome.",
+   body:"Every memorable journey begins with a first step. Thank you for spending a little time here."
+ },
+ discovery:{
+   body:"Changi Airport was designed so that the journey itself becomes part of the destination."
+ }
 },
 
-/* ==========================================================
-   2. MERLION
-   ========================================================== */
-
 {
-    id: 2,
-
-    slug: "merlion",
-
-    location: "Merlion Park",
-
-    title: "The Symbol of Singapore",
-
-    narration:
-        "Standing proudly beside Marina Bay, the Merlion tells the story of Singapore's journey from a humble fishing village to a thriving global city.",
-
-    passportStamp: "Merlion",
-
-    background: "assets/scenes/merlion.jpg",
-
-    letter: {
-
-        title: "Dear Traveller",
-
-        body:
-            "Every city has landmarks. But the places we truly remember are those where stories, dreams and history quietly meet."
-
-    },
-
-    question: {
-
-        type: "multiple-choice",
-
-        prompt:
-            "The Merlion has the head of a lion and the body of a...",
-
-        options: [
-
-            "Dragon",
-            "Fish",
-            "Tiger",
-            "Dolphin"
-
-        ],
-
-        answer: 1
-
-    }
-
+ id:2,
+ slug:"jewel",
+ location:"Jewel",
+ title:"Look Up",
+ background:"assets/scenes/jewel.jpg",
+ value:"Wonder",
+ emotion:"Curiosity",
+ memory:"Butterfly",
+ letter:{
+   title:"Look Up.",
+   body:"Sometimes beauty appears when we simply remember to look up."
+ },
+ discovery:{
+   body:"The Rain Vortex is the world's tallest indoor waterfall."
+ }
 },
 
-/* ==========================================================
-   3. HAWKER CENTRE
-   ========================================================== */
-
 {
-    id: 3,
-
-    slug: "hawker",
-
-    location: "Hawker Centre",
-
-    title: "A Taste of Singapore",
-
-    narration:
-        "At Singapore's hawker centres, recipes are passed from one generation to the next, bringing together cultures through every shared meal.",
-
-    passportStamp: "Hawker",
-
-    background: "assets/scenes/hawker.jpg",
-
-    letter: {
-
-        title: "Dear Traveller",
-
-        body:
-            "The flavour of a nation is found not only in its food, but in the people who prepare it with pride, patience and generations of tradition."
-
-    },
-
-    question: {
-
-        type: "multiple-choice",
-
-        prompt:
-            "Which organisation recognised Singapore's hawker culture as Intangible Cultural Heritage?",
-
-        options: [
-
-            "ASEAN",
-            "UNESCO",
-            "World Bank",
-            "IOC"
-
-        ],
-
-        answer: 1
-
-    }
-
+ id:3,
+ slug:"kampong",
+ location:"Kampong Glam",
+ title:"Patterns",
+ background:"assets/scenes/kampong-glam.jpg",
+ value:"Heritage",
+ emotion:"Creativity",
+ memory:"Batik Tile",
+ letter:{
+   title:"Colours tell stories.",
+   body:"Cultures become richer when they meet."
+ },
+ discovery:{
+   body:"Batik patterns are often inspired by nature."
+ }
 },
 
-/* ==========================================================
-   4. GARDENS BY THE BAY
-   ========================================================== */
-
 {
-    id: 4,
-
-    slug: "gardens",
-
-    location: "Gardens by the Bay",
-
-    title: "Nature Meets Innovation",
-
-    narration:
-        "Towering Supertrees and breathtaking conservatories reflect Singapore's vision of becoming a City in Nature.",
-
-    passportStamp: "Gardens",
-
-    background: "assets/scenes/gardens.jpg",
-
-    letter: {
-
-        title: "Dear Traveller",
-
-        body:
-            "Progress is at its most beautiful when it grows alongside nature. Singapore reminds us that imagination and sustainability can flourish together."
-
-    },
-
-    question: {
-
-        type: "multiple-choice",
-
-        prompt:
-            "What are the iconic vertical structures at Gardens by the Bay called?",
-
-        options: [
-
-            "Sky Trees",
-            "Supertrees",
-            "Green Towers",
-            "Nature Columns"
-
-        ],
-
-        answer: 1
-
-    }
-
+ id:4,
+ slug:"chinatown",
+ location:"Chinatown",
+ title:"Lanterns",
+ background:"assets/scenes/chinatown.jpg",
+ value:"Hope",
+ emotion:"Reflection",
+ memory:"Lantern",
+ letter:{
+   title:"Every light tells a story.",
+   body:"Traditions continue because people choose to carry them forward."
+ },
+ discovery:{
+   body:"Lanterns often symbolise hope and prosperity."
+ }
 },
 
-/* ==========================================================
-   5. JEWEL CHANGI AIRPORT
-   ========================================================== */
+{
+ id:5,
+ slug:"littleIndia",
+ location:"Little India",
+ title:"Garlands",
+ background:"assets/scenes/little-india.jpg",
+ value:"Harmony",
+ emotion:"Celebration",
+ memory:"Flower Garland",
+ letter:{
+   title:"Colour has a language.",
+   body:"Some places are best experienced with all the senses."
+ },
+ discovery:{
+   body:"Fresh jasmine flowers are commonly used in traditional garlands."
+ }
+},
 
 {
-    id: 5,
+ id:6,
+ slug:"hawker",
+ location:"Hawker Centre",
+ title:"Together",
+ background:"assets/scenes/hawker.jpg",
+ value:"Community",
+ emotion:"Belonging",
+ memory:"Hawker Receipt",
+ letter:{
+   title:"Pull up a chair.",
+   body:"Many of life's best conversations begin around a shared table."
+ },
+ discovery:{
+   body:"Singapore's hawker culture is recognised by UNESCO."
+ }
+},
 
-    slug: "jewel",
+{
+ id:7,
+ slug:"sentosa",
+ location:"Sentosa",
+ title:"Pause",
+ background:"assets/scenes/sentosa.jpg",
+ value:"Rest",
+ emotion:"Peace",
+ memory:"Postcard",
+ letter:{
+   title:"Take a breath.",
+   body:"Every journey deserves a quiet moment."
+ },
+ discovery:{
+   body:"Sentosa transformed from a military island into a leisure destination."
+ }
+},
 
-    location: "Jewel Changi Airport",
-
-    title: "A Perfect Farewell",
-
-    narration:
-        "Before your journey comes to an end, pause beneath the Rain Vortex and take a quiet moment to remember every story collected along the way.",
-
-    passportStamp: "Departure",
-
-    background: "assets/scenes/jewel.jpg",
-
-    letter: {
-
-        title: "Until We Meet Again",
-
-        body:
-            "Every farewell carries the promise of another hello. Wherever your next destination may be, may a small part of Singapore travel with you."
-
-    },
-
-    question: {
-
-        type: "multiple-choice",
-
-        prompt:
-            "What is the name of the world's tallest indoor waterfall at Jewel?",
-
-        options: [
-
-            "Sky Cascade",
-            "Rain Vortex",
-            "Crystal Falls",
-            "Cloud Fountain"
-
-        ],
-
-        answer: 1
-
-    }
-
+{
+ id:8,
+ slug:"ending",
+ location:"Singapore",
+ title:"Until We Meet Again",
+ background:"assets/scenes/jewel.jpg",
+ value:"Gratitude",
+ emotion:"Reflection",
+ memory:"Completed Love Letter",
+ letter:{
+   title:"Until We Meet Again",
+   body:"Thank you for spending a little time here. May a small piece of Singapore travel with you wherever you go next."
+ },
+ discovery:{
+   body:"The best journeys stay with us long after they end."
+ }
 }
 
 ];
+
+window.QUESTIONS = window.MOMENTS;
 
 })();
